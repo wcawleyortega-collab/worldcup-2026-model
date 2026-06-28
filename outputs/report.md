@@ -1,4 +1,4 @@
-# 🏆 World Cup 2026 — Model Report · 2026-06-28
+# 🏆 World Cup 2026 — Model Report · 2026-06-29
 
 *A fully-automated quant forecasting system: it rates every national team, runs 50,000 Monte-Carlo simulations of the tournament every day, prices every match, and grades its own forecasts against reality — no human in the loop. The honest headline finding: it is well-calibrated but not sharper than the betting market. Full write-up in PORTFOLIO.md.*
 
@@ -6,18 +6,18 @@
 
 | Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |
 |---|---|--:|--:|--:|--:|--:|--:|
-| Argentina | J | 2190 | 92.2% | 77.7% | 56.0% | 35.6% | **20.5%** |
-| France | I | 2210 | 86.3% | 65.9% | 48.4% | 31.5% | **19.4%** |
-| Spain | H | 2186 | 81.2% | 53.6% | 40.6% | 24.0% | **13.9%** |
-| England | L | 2134 | 82.0% | 51.1% | 30.9% | 16.2% | **8.4%** |
-| Brazil | C | 2126 | 64.3% | 43.0% | 24.0% | 12.6% | **6.3%** |
-| Colombia | K | 2066 | 80.0% | 50.0% | 21.4% | 10.7% | **4.5%** |
-| Portugal | K | 2097 | 64.4% | 29.3% | 19.0% | 9.0% | **4.2%** |
-| Netherlands | F | 2080 | 54.5% | 41.1% | 17.5% | 8.7% | **4.1%** |
-| Mexico | A | 1970 | 61.0% | 29.2% | 15.2% | 6.8% | **3.0%** |
-| Germany | E | 2044 | 67.1% | 22.8% | 12.4% | 5.6% | **2.5%** |
-| Morocco | C | 2041 | 45.5% | 32.0% | 11.9% | 5.2% | **2.1%** |
-| United States | D | 1911 | 73.9% | 39.4% | 14.1% | 5.1% | **1.9%** |
+| France | I | 2187 | 79.1% | 56.3% | 40.7% | 26.2% | **16.8%** |
+| Argentina | J | 2134 | 88.2% | 71.3% | 50.1% | 29.0% | **15.7%** |
+| Spain | H | 2149 | 76.9% | 46.8% | 32.5% | 18.6% | **11.0%** |
+| England | L | 2131 | 80.8% | 53.7% | 32.6% | 19.8% | **10.7%** |
+| Brazil | C | 2113 | 65.8% | 41.9% | 23.4% | 13.7% | **7.2%** |
+| Portugal | K | 2099 | 65.2% | 32.9% | 20.6% | 10.4% | **5.5%** |
+| Netherlands | F | 2075 | 55.6% | 40.7% | 18.5% | 9.5% | **4.9%** |
+| Germany | E | 2062 | 71.6% | 29.1% | 16.5% | 8.2% | **3.9%** |
+| United States | D | 1934 | 70.6% | 38.3% | 16.2% | 6.9% | **3.0%** |
+| Colombia | K | 2018 | 64.9% | 36.8% | 16.6% | 7.4% | **3.0%** |
+| Morocco | C | 2026 | 44.4% | 29.7% | 11.6% | 5.3% | **2.3%** |
+| Norway | I | 2027 | 57.3% | 25.6% | 11.7% | 5.6% | **2.3%** |
 
 ## Model skill — 72 resolved group games
 

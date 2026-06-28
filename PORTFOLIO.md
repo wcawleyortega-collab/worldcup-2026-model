@@ -87,8 +87,47 @@ the running Elo already absorbs recency, leaving nothing for the goal map to gai
 Likewise, a holdout refit (`eval_models.py`) chose a *flatter* probability scale
 than the base, confirming the model is **not** under-confident and should not be
 sharpened. **Recognizing a saturated model and declining to over-engineer it is
-itself the result.** The honest ceiling for this architecture is squad/xG
-covariates, not more tuning of the rating-to-goals bridge.
+itself the result.** The lesson it pointed to: you don't beat a saturated model by
+re-tuning the data it already has — you beat it by adding *orthogonal* information.
+So I tested exactly that.
+
+## The covariate that did help: squad market value (out-of-sample)
+
+The literature (Peeters 2018; Gerhards & Mutz) finds aggregate **squad market value**
+is among the strongest single predictors of international results. I added a real
+Transfermarkt snapshot of all 48 squads (`data/squad_values.csv`) and tested —
+with Elo frozen *before* the tournament, exactly as above — whether value carries
+information Elo does not (`tune_squad.py`):
+
+- **Redundant?** Cross-sectionally, log(squad value) explains **R² = 0.61** of the
+  Elo rating — overlapping, but 39% is *not* shared.
+- **Predictive?** Blending the value-implied rating into Elo and scoring W/D/L on
+  the 72 played WC2026 group games:
+
+| Elo / value mix | RPS | Read |
+|---|--:|---|
+| Pure Elo (current) | 0.1669 | baseline |
+| 70% Elo / 30% value *(shipped)* | 0.1598 | **4% better** |
+| ~30% Elo / 70% value *(in-sample optimum)* | 0.1568 | 6% better |
+| Pure value | 0.1588 | worse than the mix |
+
+The curve has an **interior optimum** and turns back up toward pure value — the
+signature of *real, complementary signal*, not over-fit noise (over-fitting would
+keep improving as you trust Elo less; it doesn't). Squad value corrects Elo's known
+lags — confederation inflation, slow adjustment for fast-rising sides. This is the
+**first tested change that beats the model out of sample**, and the contrast with
+the time-decay null is the point: re-tuning the same data did nothing; new
+information did.
+
+**Shipped honestly and conservatively.** The blend goes live at a **0.7 Elo / 0.3
+value** weight — deliberately *not* the in-sample optimum (~0.3), because one
+tournament (n = 72) can't pin the weight, and a conservative tilt captures a real
+share of the gain while staying close to the battle-tested rating model. Caveats
+stated up front: single-tournament validation, and partial overlap with the
+bookmaker-consensus layer (applied before it, so the market fit re-absorbs the
+rest). **xG was the other named covariate — and I left it out on purpose:** no
+public per-team international xG history exists for all 48 sides, so adding it would
+mean inventing data, which this project won't do.
 
 ## Architecture
 

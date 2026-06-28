@@ -13,7 +13,15 @@ from wc_model.tournament import GROUPS, ROUNDS, Simulator
 
 DATA = "data/results.csv"
 ODDS = "data/market_odds.csv"
+SQUAD_VALUES = "data/squad_values.csv"
 MARKET_WEIGHT = 0.5
+# Squad market value tilts the base Elo toward a value-implied rating. 1.0 = off
+# (pure Elo); 0.7 = a conservative 30% tilt. Out-of-sample tested in tune_squad.py:
+# the value gap carries information Elo lacks (interior RPS optimum ~0.3 on the
+# WC2026 group stage); 0.7 captures part of that gain without over-fitting one
+# tournament. Applied before the market fit, so the market layer re-absorbs the
+# rest and there is no double counting.
+SQUAD_VALUE_ALPHA = 0.7
 N_SIMS = int(sys.argv[1]) if len(sys.argv) > 1 else 20000
 
 
@@ -59,6 +67,13 @@ def main():
     print("\n== Fitting on full history to 2026-06-11 ==")
     ratings, log = compute_elo(df, as_of=cutoff)
     gm = GoalsModel().fit(log)
+    if SQUAD_VALUE_ALPHA < 1.0 and os.path.exists(SQUAD_VALUES):
+        from wc_model.squad import load_values, blended_ratings, fit_value_to_elo
+        vals = load_values(SQUAD_VALUES)
+        _, st = fit_value_to_elo(ratings, vals)
+        ratings = blended_ratings(ratings, vals, SQUAD_VALUE_ALPHA)
+        print(f"  squad value blended at {1 - SQUAD_VALUE_ALPHA:.0%} "
+              f"(alpha={SQUAD_VALUE_ALPHA}; value explains R^2={st['r2']:.2f} of Elo)")
     print(f"  Dixon-Coles rho = {gm.rho:.4f}")
     print(f"  GLM beta = {np.round(gm.beta, 3)}")
 

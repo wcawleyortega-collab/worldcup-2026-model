@@ -31,6 +31,10 @@ RESULTS_URL = "https://raw.githubusercontent.com/martj42/international_results/m
 SHOOTOUTS_URL = "https://raw.githubusercontent.com/martj42/international_results/master/shootouts.csv"
 WC_START, GROUP_END, WC_END = "2026-06-11", "2026-06-28", "2026-07-20"
 MARKET_WEIGHT = 0.5
+# Squad market-value tilt on the base Elo (1.0 = off, 0.7 = conservative 30% tilt).
+# Out-of-sample tested in tune_squad.py: squad value carries information Elo lacks.
+# Applied before the bookmaker deltas. See PORTFOLIO.md "Squad-value covariate".
+SQUAD_VALUE_ALPHA = 0.7
 N_SIMS = int(sys.argv[1]) if len(sys.argv) > 1 else 50000
 
 
@@ -116,6 +120,13 @@ def main():
 
     ratings, log = compute_elo(df)  # through all completed matches
     gm = GoalsModel().fit(log)
+
+    squad_path = os.path.join(BASE, "data", "squad_values.csv")
+    if SQUAD_VALUE_ALPHA < 1.0 and os.path.exists(squad_path):
+        from wc_model.squad import load_values, blended_ratings
+        ratings = blended_ratings(ratings, load_values(squad_path), SQUAD_VALUE_ALPHA)
+        print(f"  blended squad market value at weight {1 - SQUAD_VALUE_ALPHA:.0%} "
+              f"(alpha={SQUAD_VALUE_ALPHA})")
 
     wc = df[(df["tournament"] == "FIFA World Cup") & (df["date"] >= WC_START)
             & (df["date"] <= WC_END)]
