@@ -18,12 +18,18 @@ Sections
 Run:  .venv/bin/python daily_report.py
 """
 
+import base64
 import datetime
 import html
+import io
 import os
 
 import numpy as np
 import pandas as pd
+
+import matplotlib
+matplotlib.use("Agg")  # headless: safe under cron / GitHub Actions
+import matplotlib.pyplot as plt
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(BASE, "outputs")
@@ -164,12 +170,164 @@ def betting_ledger():
     }
 
 
+# ---------------------------------------------------------------- model helpers
+def _png(fig):
+    """Render a matplotlib figure to a self-contained inline base64 <img>."""
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=110, bbox_inches="tight")
+    plt.close(fig)
+    b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+    return f"<img alt='chart' style='max-width:100%;margin:10px 0' src='data:image/png;base64,{b64}'>"
+
+
+def load_model():
+    """Live blended ratings (the elo the last sim used) + a refit goal model.
+
+    Fast (Elo pass + GLM fit, no Monte-Carlo) so the report stays cron-safe. The
+    ratings already carry the squad-value and bookmaker blends; the goal model is
+    the team-independent win-expectancy -> goals map."""
+    tp = _read("outputs/team_probabilities.csv")
+    res = _read("data/results.csv", na_values=["NA"])
+    if tp is None or res is None:
+        return None, None
+    res["neutral"] = res["neutral"].astype(str).str.upper() == "TRUE"
+    from wc_model.elo import compute_elo
+    from wc_model.goals import GoalsModel
+    _, log = compute_elo(res)
+    gm = GoalsModel().fit(log)
+    return dict(zip(tp["team"], tp["elo"].astype(float))), gm
+
+
+def title_tracker():
+    """Line chart of the top-8 teams' championship probability over the tournament."""
+    hist = _read("outputs/history.csv")
+    if hist is None or hist["date"].nunique() < 3:
+        return None
+    piv = hist.pivot_table(index="date", columns="team", values="reach_champion").sort_index()
+    top = list(piv.iloc[-1].sort_values(ascending=False).index[:8])
+    fig, ax = plt.subplots(figsize=(8, 4))
+    for t in top:
+        ax.plot(pd.to_datetime(piv.index), piv[t] * 100, marker="o", ms=3, lw=1.8, label=t)
+    ax.set_ylabel("Championship probability (%)")
+    ax.set_title("Title odds over the tournament (top 8)")
+    ax.legend(fontsize=8, ncol=2, frameon=False)
+    ax.grid(alpha=.25)
+    fig.autofmt_xdate()
+    return _png(fig)
+
+
+def _market_snapshot(market, which="last"):
+    pm = _read("data/polymarket_history.csv")
+    if pm is None:
+        return None
+    a = pm[pm["market"] == market].sort_values("ts_utc")
+    if a.empty:
+        return None
+    a = a.groupby("team", as_index=False).last() if which == "last" \
+        else a.groupby("team", as_index=False).first()
+    return dict(zip(a["team"], a["price"].astype(float)))
+
+
+def market_vs_model():
+    """Latest model vs Polymarket championship odds: scatter + biggest disagreements."""
+    mk = _market_snapshot("outright", "last")
+    tp = _read("outputs/team_probabilities.csv")
+    if mk is None or tp is None:
+        return None
+    model = dict(zip(tp["team"], tp["reach_champion"].astype(float)))
+    teams = [t for t in model if t in mk and mk[t] > 0]
+    tot = sum(mk[t] for t in teams) or 1.0
+    mkt = {t: mk[t] / tot for t in teams}  # strip overround -> compare on equal footing
+    rows = sorted(((t, model[t], mkt[t], model[t] - mkt[t]) for t in teams),
+                  key=lambda r: -abs(r[3]))
+    fig, ax = plt.subplots(figsize=(6.2, 6))
+    xs = [model[t] * 100 for t in teams]
+    ys = [mkt[t] * 100 for t in teams]
+    ax.scatter(xs, ys, s=20, alpha=.7, color="#0a3d62")
+    lim = max(xs + ys + [1]) * 1.1
+    ax.plot([0, lim], [0, lim], "--", color="#999", lw=1)
+    for t, mo, ma, _ in rows[:6]:
+        ax.annotate(t, (mo * 100, ma * 100), fontsize=7.5,
+                    xytext=(3, 3), textcoords="offset points")
+    ax.set_xlabel("Model champion %")
+    ax.set_ylabel("Polymarket implied % (overround stripped)")
+    ax.set_title("Model vs market — championship")
+    ax.grid(alpha=.25)
+    return _png(fig), rows
+
+
+def market_efficiency():
+    """Pre-tournament model vs market advancement priors, scored on who actually
+    reached the round of 32 (now known from the bracket)."""
+    res = load_results()
+    if res is None:
+        return None
+    ko = res[res["date"] > GROUP_END]
+    if ko.empty:
+        return None
+    advancers = set(ko["home_team"]) | set(ko["away_team"])
+    mk = _market_snapshot("advance", "first")
+    hist = _read("outputs/history.csv")
+    if mk is None or hist is None:
+        return None
+    first_day = hist["date"].min()
+    model0 = dict(zip(hist[hist["date"] == first_day]["team"],
+                      hist[hist["date"] == first_day]["reach_r32"].astype(float)))
+    teams = [t for t in model0 if t in mk]
+    if len(teams) < 24:
+        return None
+    y = {t: (1.0 if t in advancers else 0.0) for t in teams}
+    mb = np.mean([(model0[t] - y[t]) ** 2 for t in teams])
+    kb = np.mean([(mk[t] - y[t]) ** 2 for t in teams])
+    return {"model": float(mb), "market": float(kb), "n": len(teams)}
+
+
+def knockout_board():
+    """Each scheduled knockout tie with the model's W/D/L, advance %, expected
+    goals, most-likely scorelines, BTTS and over-2.5 — from the live ratings."""
+    res = load_results()
+    tp = _read("outputs/team_probabilities.csv")
+    if res is None or tp is None:
+        return None
+    ko = res[res["date"] > GROUP_END].copy()
+    if ko.empty:
+        return None
+    ratings, gm = load_model()
+    if ratings is None:
+        return None
+    from wc_model.elo import win_expectancy, HOME_ADV
+    from wc_model.tournament import HOSTS
+    adv = dict(zip(tp["team"], tp["reach_r16"].astype(float)))  # P(win the R32 tie)
+    rows = []
+    for r in ko.sort_values("date").itertuples():
+        a, b = r.home_team, r.away_team
+        a_home, b_home = a in HOSTS and b not in HOSTS, b in HOSTS and a not in HOSTS
+        if b_home:                       # orient the home side as 'a' for the matrix
+            a, b, a_home = b, a, True
+        dr = ratings.get(a, 1500) - ratings.get(b, 1500) + (HOME_ADV if a_home else 0.0)
+        lam_a, lam_b = gm.expected_goals(win_expectancy(dr), a_home)
+        m = gm.score_matrix(lam_a, lam_b)
+        flat = sorted(((m[i, j], i, j) for i in range(m.shape[0]) for j in range(m.shape[1])),
+                      reverse=True)
+        rows.append({
+            "date": str(r.date), "a": a, "b": b,
+            "adv_a": adv.get(a, float("nan")), "adv_b": adv.get(b, float("nan")),
+            "pw": float(np.tril(m, -1).sum()), "pd": float(np.trace(m)),
+            "pl": float(np.triu(m, 1).sum()), "lam_a": lam_a, "lam_b": lam_b,
+            "top": ", ".join(f"{i}–{j} ({p:.0%})" for p, i, j in flat[:3]),
+            "btts": float(m[1:, 1:].sum()),
+            "over25": float(sum(m[i, j] for i in range(m.shape[0])
+                                for j in range(m.shape[1]) if i + j >= 3)),
+            "host": a_home})
+    return rows
+
+
 # ---------------------------------------------------------------- rendering
 def _fmt_pct(x):
     return f"{x:.1%}" if pd.notna(x) else "—"
 
 
-def build_markdown(date, lb, day, fx, skill, cal, adv, bet):
+def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, bet):
     L = [f"# 🏆 World Cup 2026 — Model Report · {date}", "",
          "*A fully-automated quant forecasting system: it rates every national team, "
          "runs 50,000 Monte-Carlo simulations of the tournament every day, prices every "
@@ -184,6 +342,23 @@ def build_markdown(date, lb, day, fx, skill, cal, adv, bet):
             L.append(f"| {r.team} | {getattr(r,'group','')} | {int(r.elo)} | "
                      f"{_fmt_pct(r.reach_r16)} | {_fmt_pct(r.reach_qf)} | {_fmt_pct(r.reach_sf)} | "
                      f"{_fmt_pct(r.reach_final)} | **{_fmt_pct(r.reach_champion)}** |")
+        L.append("")
+    if tracker:
+        L += ["## Title odds over time", "", tracker, ""]
+    if kb:
+        L += ["## Round of 32 — model match detail", "",
+              "Advance % is the model's simulated probability of winning the tie (incl. "
+              "extra time / penalties); W/D/L, scorelines, BTTS and over-2.5 are the "
+              "90-minute Poisson–Dixon-Coles distribution. *(H) = host (home advantage).*",
+              "",
+              "| Tie (advance %) | W/D/L 90′ | xG | Most likely scores | BTTS | O2.5 |",
+              "|---|--:|--:|---|--:|--:|"]
+        for r in kb:
+            ha = " (H)" if r["host"] else ""
+            tie = f"{r['a']}{ha} {r['adv_a']:.0%} v {r['b']} {r['adv_b']:.0%}"
+            L.append(f"| {tie} | {r['pw']*100:.0f}/{r['pd']*100:.0f}/{r['pl']*100:.0f} | "
+                     f"{r['lam_a']:.1f}–{r['lam_b']:.1f} | {r['top']} | "
+                     f"{r['btts']:.0%} | {r['over25']:.0%} |")
         L.append("")
     if fx is not None:
         L += [f"## Next fixtures — {day} (model W/D/L)", "",
@@ -212,6 +387,24 @@ def build_markdown(date, lb, day, fx, skill, cal, adv, bet):
         if "polymarket" in adv:
             L.append(f"- Polymarket: **{adv['polymarket']:.4f}**")
         L.append("")
+    if mvm is not None:
+        img, rows = mvm
+        L += ["## Model vs market (live efficiency study)", "",
+              "Championship odds: the model against Polymarket (overround stripped). "
+              "Points on the dashed line mean agreement; the table lists where they diverge most.",
+              "", img, "",
+              "| Biggest disagreement | Model | Market | Gap |", "|---|--:|--:|--:|"]
+        for t, mo, ma, d in rows[:8]:
+            L.append(f"| {t} | {mo:.1%} | {ma:.1%} | {d*100:+.1f} |")
+        L.append("")
+        if eff is not None:
+            L += [f"**Advancement (pre-tournament priors, scored on who reached the "
+                  f"Round of 32, n={eff['n']}):** model Brier **{eff['model']:.3f}** vs "
+                  f"Polymarket **{eff['market']:.3f}** — "
+                  + ("the market edged the model" if eff['market'] < eff['model']
+                     else "the model edged the market")
+                  + ", consistent with the project's honest finding that the model is "
+                  "well-calibrated but not sharper than the market.", ""]
     if bet is not None:
         b = bet
         sign = "+" if b["profit"] >= 0 else ""
@@ -283,6 +476,8 @@ def md_to_html(md, date):
             continue
         if in_tbl:
             body.append("</tbody></table>"); in_tbl = False
+        if ln.lstrip().startswith("<"):     # raw HTML passthrough (embedded charts)
+            body.append(ln); continue
         if ln.startswith("# "):
             body.append(f"<h1>{inline(ln[2:])}</h1>")
         elif ln.startswith("## "):
@@ -312,6 +507,15 @@ def md_to_html(md, date):
             + "\n".join(body) + "</body></html>")
 
 
+def _try(fn):
+    """Run an optional section; never let it break the cron report."""
+    try:
+        return fn()
+    except Exception as e:
+        print(f"  warn: {fn.__name__} failed: {e}")
+        return None
+
+
 def main():
     date = datetime.date.today().isoformat()
     lb = leaderboard()
@@ -319,10 +523,18 @@ def main():
     skill, cal = match_skill()
     adv = advancement_skill()
     bet = betting_ledger()
-    md = build_markdown(date, lb, day, fx, skill, cal, adv, bet)
+    tracker = _try(title_tracker)
+    kb = _try(knockout_board)
+    mvm = _try(market_vs_model)
+    eff = _try(market_efficiency)
+    md = build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, bet)
     page = md_to_html(md, date)
+    # HTML stays self-contained (base64 charts inlined); the .md view drops the
+    # data URIs so the markdown file stays small and diff-friendly.
+    import re
+    md_file = re.sub(r"<img[^>]*>", "*(chart — view the HTML report)*", md)
     with open(os.path.join(OUT, "report.md"), "w") as f:
-        f.write(md)
+        f.write(md_file)
     with open(os.path.join(OUT, "report.html"), "w") as f:
         f.write(page)
     # also publish to docs/ so GitHub Pages serves the live report at the site root
