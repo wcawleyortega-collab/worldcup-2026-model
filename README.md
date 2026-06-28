@@ -10,8 +10,8 @@ publishes a live self-updating report — no human in the loop.**
 
 [![Live model report](docs/report-preview.png)](https://wcawleyortega-collab.github.io/worldcup-2026-model/)
 
-> Scored on **60+ resolved matches** (forecasts logged *before* kickoff): RPS **0.176** vs
-> 0.222 uniform baseline, avg P(actual outcome) **44.3%** vs 33.3% chance, and well-calibrated
+> Scored on **all 72 group-stage matches** (forecasts logged *before* kickoff): RPS **0.167** vs
+> 0.222 uniform baseline, avg P(actual outcome) **45.0%** vs 33.3% chance, and well-calibrated
 > bucket-by-bucket. The honest headline finding — the model is calibrated but **not sharper than
 > the market** — and what this project demonstrates are written up in **[`PORTFOLIO.md`](PORTFOLIO.md)**.
 
@@ -75,7 +75,7 @@ Data: [martj42/international_results](https://github.com/martj42/international_r
 
 ## Live updates during the tournament
 
-`update_predictions.py` re-forecasts the tournament conditioned on real results, and a macOS LaunchAgent (`~/Library/LaunchAgents/com.worldcup.predictions.plist`) runs it **every morning at 6:30** through July 20:
+`update_predictions.py` re-forecasts the tournament conditioned on real results, and a macOS LaunchAgent (`~/Library/LaunchAgents/com.worldcup.predictions.plist`) runs the full pipeline **twice daily (06:30 and 23:30)** through July 20:
 
 1. Pulls the latest `results.csv` + `shootouts.csv` from the martj42 repo (updated with World Cup scores as they're played).
 2. Recomputes Elo through all completed matches — tournament results move ratings with K=60.

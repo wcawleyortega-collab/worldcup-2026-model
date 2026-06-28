@@ -1,0 +1,10 @@
+# Force git/GitHub to treat these as text so diffs render readably
+# (their UTF-8 content was tripping git's binary-detection heuristic).
+*.md   diff text
+*.py   diff text
+*.yml  diff text
+*.yaml diff text
+*.csv  diff text
+*.sh   diff text
+*.html diff text
+*.txt  diff text

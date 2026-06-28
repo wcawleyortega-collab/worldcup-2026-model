@@ -8,7 +8,7 @@ shareable report. No human in the loop.**
 > **CV line (quantified, every word verifiable in this repo):**
 > *"Built a Monte-Carlo forecasting model (Elo, Poisson, Dixon-Coles, 50,000
 > simulations) and a live study benchmarking forecasts against market prices;
-> well-calibrated out-of-sample across 60+ live matches (RPS 0.18 vs 0.22 baseline).
+> well-calibrated out-of-sample across 70+ live matches (RPS 0.17 vs 0.22 baseline).
 > Automated twice-daily data collection, model updates, and a self-publishing
 > report (GitHub Actions + Pages)."
 
@@ -32,22 +32,22 @@ importantly, it **grades itself honestly**:
 
 ## Live model skill (out-of-sample, updates every day)
 
-Scored on **60 resolved 2026 group matches**, forecasts logged *before* kickoff:
+Scored on **all 72 group-stage matches** (full group stage), forecasts logged *before* kickoff:
 
 | Metric | This model | Uniform baseline | Read |
 |---|--:|--:|---|
-| Ranked Probability Score | **0.176** | 0.222 | 21% better than baseline |
-| Log-loss | **0.926** | 1.099 | competitive with published academic models |
-| Avg P(actual outcome) | **44.3%** | 33.3% | the right result was the model's pick far more often than chance |
+| Ranked Probability Score | **0.167** | 0.222 | 25% better than baseline |
+| Log-loss | **0.903** | 1.099 | competitive with published academic models |
+| Avg P(actual outcome) | **45.0%** | 33.3% | the right result was the model's pick far more often than chance |
 
-**Calibration** — when the model says 60–80%, it happens ~74% of the time:
+**Calibration** — when the model says 60–80%, it happens ~77% of the time:
 
 | Forecast bucket | Forecast avg | Realized | n |
 |---|--:|--:|--:|
-| 0–20% | 12% | 16% | 38 |
-| 20–40% | 27% | 22% | 86 |
-| 40–60% | 48% | 56% | 32 |
-| 60–80% | 67% | 74% | 19 |
+| 0–20% | 12% | 14% | 44 |
+| 20–40% | 28% | 22% | 109 |
+| 40–60% | 48% | 60% | 35 |
+| 60–80% | 67% | 77% | 22 |
 
 *(Numbers above are regenerated automatically into `outputs/report.html` on every run.)*
 
@@ -69,6 +69,26 @@ That is exactly the lesson that separates someone who understands markets from s
 who overfits a model and assumes they've found free money.
 
 ---
+
+## Optimization study (knowing when *not* to add complexity)
+
+I ran a controlled experiment (`tune_goals.py`) testing the textbook next
+improvement — **Dixon-Coles exponential time-decay** weighting of the goal model —
+against the current uniform fit, refitting the whole pipeline *before* each World
+Cup and scoring it out-of-sample:
+
+| Goal-fit policy | WC2018 RPS | WC2022 RPS | WC2026 RPS | Mean |
+|---|--:|--:|--:|--:|
+| Current (uniform, 2010+) | 0.2092 | 0.2211 | 0.1669 | **0.1991** |
+| + time-decay (4–12y half-life) | 0.2089–0.2092 | 0.2212–0.2216 | 0.1668–0.1673 | 0.1991 |
+
+The decay is **neutral** (4th-decimal noise), so it ships **disabled by default** —
+the running Elo already absorbs recency, leaving nothing for the goal map to gain.
+Likewise, a holdout refit (`eval_models.py`) chose a *flatter* probability scale
+than the base, confirming the model is **not** under-confident and should not be
+sharpened. **Recognizing a saturated model and declining to over-engineer it is
+itself the result.** The honest ceiling for this architecture is squad/xG
+covariates, not more tuning of the rating-to-goals bridge.
 
 ## Architecture
 

@@ -9,6 +9,7 @@ distribution for low-score dependence with the Dixon-Coles tau term
 """
 
 import numpy as np
+import pandas as pd
 from scipy.optimize import minimize, minimize_scalar
 from scipy.stats import poisson
 
@@ -27,13 +28,23 @@ class GoalsModel:
         self.rho = 0.0    # Dixon-Coles low-score correction
 
     # ---- fitting -----------------------------------------------------------
-    def fit(self, elo_log, since="2010-01-01"):
+    def fit(self, elo_log, since="2010-01-01", half_life=None):
+        """Fit the Poisson GLM (+ Dixon-Coles rho) mapping Elo win expectancy to goals.
+
+        half_life: if set (in years), apply Dixon-Coles exponential time decay —
+        each match is weighted 0.5 ** (age_years / half_life), so recent form
+        counts more, and a wider history window (`since`) is used because old
+        games fade out smoothly instead of being clipped. If None, the original
+        behaviour (uniform weights over matches on/after `since`) is kept.
+        """
         df = elo_log[elo_log["date"] >= since]
+        w_match = self._decay_weights(df["date"], half_life)
         # two rows per match: (team perspective, opponent perspective)
         we = np.concatenate([df["we_home"].values, 1 - df["we_home"].values])
         goals = np.concatenate([df["home_score"].values, df["away_score"].values])
         is_home = ~df["neutral"].values
         home_flag = np.concatenate([is_home.astype(float), -is_home.astype(float)])
+        w = np.concatenate([w_match, w_match])
 
         X = _design(we, home_flag)
         y = goals.astype(float)
@@ -41,23 +52,32 @@ class GoalsModel:
         def nll(beta):
             eta = X @ beta
             lam = np.exp(np.clip(eta, -10, 3))
-            return -(y * eta - lam).sum()
+            return -(w * (y * eta - lam)).sum()
 
         beta0 = np.zeros(X.shape[1])
-        beta0[0] = np.log(max(y.mean(), 0.1))
+        beta0[0] = np.log(max(np.average(y, weights=w), 0.1))
         res = minimize(nll, beta0, method="L-BFGS-B")
         if not res.success:
             raise RuntimeError(f"Poisson GLM failed: {res.message}")
         self.beta = res.x
 
-        self._fit_rho(df)
+        self._fit_rho(df, w_match)
         return self
 
-    def _fit_rho(self, df):
+    @staticmethod
+    def _decay_weights(dates, half_life):
+        if half_life is None:
+            return np.ones(len(dates))
+        t = pd.to_datetime(dates.values)
+        age_years = (t.max() - t).days / 365.25
+        return 0.5 ** (age_years / float(half_life))
+
+    def _fit_rho(self, df, weights=None):
         lam_h = self._lambda(df["we_home"].values, np.where(df["neutral"].values, 0.0, 1.0))
         lam_a = self._lambda(1 - df["we_home"].values, np.where(df["neutral"].values, 0.0, -1.0))
         x = df["home_score"].values
         y = df["away_score"].values
+        w = np.ones_like(lam_h) if weights is None else np.asarray(weights, dtype=float)
 
         def nll(rho):
             tau = np.ones_like(lam_h)
@@ -71,7 +91,7 @@ class GoalsModel:
             tau[m11] = 1 - rho
             if (tau <= 0).any():
                 return 1e12
-            return -np.log(tau).sum()
+            return -(w * np.log(tau)).sum()
 
         res = minimize_scalar(nll, bounds=(-0.3, 0.3), method="bounded")
         self.rho = float(res.x)

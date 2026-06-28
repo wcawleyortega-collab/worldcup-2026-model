@@ -27,6 +27,7 @@ import pandas as pd
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(BASE, "outputs")
+REPO = "https://github.com/wcawleyortega-collab/worldcup-2026-model"
 GROUP_END = "2026-06-28"
 WC_START = "2026-06-11"
 
@@ -169,7 +170,12 @@ def _fmt_pct(x):
 
 
 def build_markdown(date, lb, day, fx, skill, cal, adv, bet):
-    L = [f"# 🏆 World Cup 2026 — Model Report · {date}", ""]
+    L = [f"# 🏆 World Cup 2026 — Model Report · {date}", "",
+         "*A fully-automated quant forecasting system: it rates every national team, "
+         "runs 50,000 Monte-Carlo simulations of the tournament every day, prices every "
+         "match, and grades its own forecasts against reality — no human in the loop. "
+         "The honest headline finding: it is well-calibrated but not sharper than the "
+         "betting market. Full write-up in PORTFOLIO.md.*", ""]
     if lb is not None:
         L += ["## Championship leaderboard (blended forecast)", "",
               "| Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |",
@@ -233,21 +239,28 @@ def md_to_html(md, date):
     css = """
     body{font:15px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
       max-width:860px;margin:40px auto;padding:0 20px;color:#1a1a2e;background:#fafafe}
-    h1{font-size:26px;border-bottom:3px solid #0a3d62;padding-bottom:10px}
+    h1{font-size:27px;border-bottom:3px solid #0a3d62;padding-bottom:10px;letter-spacing:-.3px}
     h2{font-size:20px;margin-top:34px;color:#0a3d62}
     h3{font-size:16px;color:#3c6382}
-    table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+    table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;
+      box-shadow:0 1px 3px rgba(10,61,98,.07);border-radius:6px;overflow:hidden}
     th,td{padding:7px 10px;border-bottom:1px solid #e1e1ee;text-align:right}
     th:first-child,td:first-child{text-align:left}
     thead th{background:#0a3d62;color:#fff;border:none}
     tbody tr:hover{background:#eef3f8}
     strong{color:#0a3d62}
     em{color:#777;font-size:13px}
+    a{color:#0a6cb3;text-decoration:none}
+    a:hover{text-decoration:underline}
     hr{border:none;border-top:1px solid #ddd;margin:30px 0}
     .tag{display:inline-block;background:#0a3d62;color:#fff;padding:2px 10px;
       border-radius:12px;font-size:12px;letter-spacing:.5px}
+    .lede{margin:18px 0 6px;padding:16px 18px;background:#fff;border:1px solid #e1e1ee;
+      border-left:4px solid #0a3d62;border-radius:8px;font-size:14.5px;color:#33384a;
+      box-shadow:0 1px 3px rgba(10,61,98,.06)}
+    .lede a{font-weight:600}
     """
-    body, in_tbl = [], False
+    body, in_tbl, lede_done = [], False, False
 
     def inline(s):
         s = html.escape(s)
@@ -281,7 +294,14 @@ def md_to_html(md, date):
         elif ln.strip() == "---":
             body.append("<hr>")
         elif ln.startswith("*") and ln.endswith("*"):
-            body.append(f"<em>{inline(ln.strip('*'))}</em>")
+            if not lede_done and any("<h1" in b for b in body):
+                body.append(
+                    f"<div class='lede'>{inline(ln.strip('*'))} "
+                    f"<a href='{REPO}'>Source</a> · "
+                    f"<a href='{REPO}/blob/main/PORTFOLIO.md'>Full write-up</a></div>")
+                lede_done = True
+            else:
+                body.append(f"<em>{inline(ln.strip('*'))}</em>")
         elif ln.strip():
             body.append(f"<p>{inline(ln)}</p>")
     if in_tbl:

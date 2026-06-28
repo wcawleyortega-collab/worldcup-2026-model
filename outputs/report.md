@@ -1,5 +1,7 @@
 # 🏆 World Cup 2026 — Model Report · 2026-06-28
 
+*A fully-automated quant forecasting system: it rates every national team, runs 50,000 Monte-Carlo simulations of the tournament every day, prices every match, and grades its own forecasts against reality — no human in the loop. The honest headline finding: it is well-calibrated but not sharper than the betting market. Full write-up in PORTFOLIO.md.*
+
 ## Championship leaderboard (blended forecast)
 
 | Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |

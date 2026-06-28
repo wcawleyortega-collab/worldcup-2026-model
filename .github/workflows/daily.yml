@@ -4,8 +4,8 @@ name: daily update
 # cloud — so the live GitHub Pages report self-updates without the local machine.
 on:
   schedule:
-    - cron: "30 6 * * *"    # 06:30 UTC
-    - cron: "30 23 * * *"   # 23:30 UTC
+    - cron: "30 3 * * *"    # 06:30 in UTC+3 (your local morning)
+    - cron: "30 20 * * *"   # 23:30 in UTC+3 (your local night)
   workflow_dispatch:         # allow manual "Run workflow" from the Actions tab
 
 permissions:
