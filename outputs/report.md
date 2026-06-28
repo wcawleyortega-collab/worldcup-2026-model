@@ -2,7 +2,10 @@
 
 *A fully-automated quant forecasting system: it rates every national team, runs 50,000 Monte-Carlo simulations of the tournament every day, prices every match, and grades its own forecasts against reality — no human in the loop. The honest headline finding: it is well-calibrated but not sharper than the betting market. Full write-up in PORTFOLIO.md.*
 
-## Championship leaderboard (blended forecast)
+<div class="cards"><div class="card"><div class="k">Current favourite</div><div class="v">France</div><div class="s">16.8% chance to win the cup</div></div><div class="card"><div class="k">Forecast accuracy</div><div class="v">0.167</div><div class="s">RPS — 25% better than guessing (72 games)</div></div><div class="card"><div class="k">Hit rate</div><div class="v">45%</div><div class="s">avg confidence in the result that actually happened</div></div><div class="card"><div class="k">Paper betting</div><div class="v">2W–2L</div><div class="s">net −€90 · tracked honestly, no real money</div></div></div>
+
+## Championship leaderboard
+> Each team's simulated chance of reaching each knockout round and lifting the trophy, from 50,000 tournament simulations. Darker cells = more likely.
 
 | Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |
 |---|---|--:|--:|--:|--:|--:|--:|
@@ -20,12 +23,12 @@
 | Norway | I | 2027 | 57.3% | 25.6% | 11.7% | 5.6% | **2.3%** |
 
 ## Title odds over time
+> How each contender's championship chance has moved as results came in.
 
 *(chart — view the HTML report)*
 
-## Round of 32 — model match detail
-
-Advance % is the model's simulated probability of winning the tie (incl. extra time / penalties); W/D/L, scorelines, BTTS and over-2.5 are the 90-minute Poisson–Dixon-Coles distribution. *(H) = host (home advantage).*
+## Round of 32 — match by match
+> Advance % is the model's chance of winning the tie (including extra time and penalties). W/D/L, scorelines, BTTS and O2.5 are the 90-minute picture. (H) marks the host side, which gets home advantage.
 
 | Tie (advance %) | W/D/L 90′ | xG | Most likely scores | BTTS | O2.5 |
 |---|--:|--:|---|--:|--:|
@@ -45,18 +48,20 @@ Advance % is the model's simulated probability of winning the tie (incl. extra t
 | Argentina 88% v Cape Verde 12% | 76/17/7 | 2.3–0.6 | 2–0 (15%), 1–0 (13%), 3–0 (11%) | 40% | 55% |
 | Colombia 65% v Ghana 35% | 49/27/24 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
 
-## Model skill — 72 resolved group games
+## How accurate is it? (72 resolved games)
+> Pre-kickoff forecasts scored against reality, versus blindly guessing 33/33/33. On every metric, lower is better except hit rate.
 
-| Metric | Model | Uniform baseline |
+| Metric | Model | Guessing |
 |---|--:|--:|
-| RPS (lower better) | **0.1668** | 0.2222 |
-| Log-loss | **0.9032** | 1.0986 |
+| RPS | **0.1668** | 0.2222 |
+| log-loss | **0.9032** | 1.0986 |
 | Brier | **0.5370** | 0.6667 |
-| Avg P(actual outcome) | **45.0%** | 33.3% |
+| Hit rate (avg P of actual) | **45.0%** | 33.3% |
 
-### Calibration (forecast prob vs realized frequency)
+### Calibration check
+> When the model says X%, does it happen about X% of the time? Forecast vs reality, bucketed.
 
-| Bucket | n | Forecast | Realized |
+| Forecast bucket | n | Model said | Actually happened |
 |---|--:|--:|--:|
 | (0.0, 0.2] | 44 | 12.3% | 13.6% |
 | (0.2, 0.4] | 109 | 27.5% | 22.0% |
@@ -64,9 +69,8 @@ Advance % is the model's simulated probability of winning the tie (incl. extra t
 | (0.6, 0.8] | 22 | 66.8% | 77.3% |
 | (0.8, 1.0] | 6 | 83.8% | 66.7% |
 
-## Model vs market (live efficiency study)
-
-Championship odds: the model against Polymarket (overround stripped). Points on the dashed line mean agreement; the table lists where they diverge most.
+## Model vs the betting market
+> Championship odds: the model against Polymarket (overround stripped). Points on the dashed line mean they agree; the table shows where they disagree most.
 
 *(chart — view the HTML report)*
 
@@ -81,9 +85,10 @@ Championship odds: the model against Polymarket (overround stripped). Points on 
 | United States | 3.0% | 2.2% | +0.8 |
 | England | 10.7% | 10.1% | +0.6 |
 
-**Advancement (pre-tournament priors, scored on who reached the Round of 32, n=48):** model Brier **0.180** vs Polymarket **0.154** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
+**Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.180** vs Polymarket **0.154** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
 
 ## Betting ledger (paper, honest)
+> A paper-traded book — no real money — kept to test honestly whether any model-vs-market edge is actually real. So far: no.
 
 - **Settled:** 2W–2L  ·  staked 300  ·  returned 210  ·  **net -89.80** (ROI -29.9%)
 - **Scratched** (no stake, pre-kickoff): 3

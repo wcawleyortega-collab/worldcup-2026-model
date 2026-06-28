@@ -23,6 +23,7 @@ import datetime
 import html
 import io
 import os
+import re
 
 import numpy as np
 import pandas as pd
@@ -30,10 +31,39 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")  # headless: safe under cron / GitHub Actions
 import matplotlib.pyplot as plt
+from cycler import cycler
+
+# Chart styling matched to the report's design system (navy palette, despined).
+plt.rcParams.update({
+    "font.family": "sans-serif", "font.size": 10.5,
+    "figure.facecolor": "white", "axes.facecolor": "white",
+    "axes.edgecolor": "#c8cedb", "axes.linewidth": .8,
+    "axes.spines.top": False, "axes.spines.right": False,
+    "axes.grid": True, "grid.color": "#e9ecf3", "grid.linewidth": .9,
+    "axes.titlesize": 12.5, "axes.titleweight": "bold", "axes.titlecolor": "#0a3d62",
+    "axes.titlelocation": "left", "axes.titlepad": 10,
+    "axes.labelcolor": "#5b6677", "xtick.color": "#5b6677", "ytick.color": "#5b6677",
+    "axes.prop_cycle": cycler(color=["#0a3d62", "#e58e26", "#1e9b6b", "#c0392b",
+                                     "#6c5ce7", "#0a6cb3", "#d6336c", "#16a085"]),
+})
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(BASE, "outputs")
 REPO = "https://github.com/wcawleyortega-collab/worldcup-2026-model"
+
+# Plain-language tooltips for the jargon (hover to read on the page).
+GLOSSARY = {
+    "RPS": "Ranked Probability Score — overall accuracy of the win/draw/loss forecasts. Lower is better.",
+    "Brier": "Brier score — squared error of the probability forecasts. Lower is better.",
+    "log-loss": "Log-loss — punishes confident wrong calls hard. Lower is better.",
+    "Elo": "A rolling rating of team strength, updated after every match played since 1872.",
+    "xG": "Expected goals — the model's average goals for each side in this match.",
+    "BTTS": "Both teams to score — chance each side scores at least one goal.",
+    "O2.5": "Over 2.5 goals — chance the match finishes with 3 or more goals.",
+    "overround": "The bookmaker's built-in margin; stripped out so model and market compare fairly.",
+    "calibration": "Whether outcomes the model calls '70% likely' actually happen about 70% of the time.",
+    "ROI": "Return on investment of the paper bets.",
+}
 GROUP_END = "2026-06-28"
 WC_START = "2026-06-11"
 
@@ -327,6 +357,30 @@ def _fmt_pct(x):
     return f"{x:.1%}" if pd.notna(x) else "—"
 
 
+def _cards(lb, skill, bet):
+    """An 'at a glance' summary band (raw HTML — passes through the renderer)."""
+    def card(k, v, s):
+        return (f'<div class="card"><div class="k">{html.escape(k)}</div>'
+                f'<div class="v">{html.escape(v)}</div>'
+                f'<div class="s">{html.escape(s)}</div></div>')
+    c = []
+    if lb is not None and len(lb):
+        t = lb.iloc[0]
+        c.append(card("Current favourite", str(t["team"]),
+                      f"{t['reach_champion']:.1%} chance to win the cup"))
+    if skill:
+        better = (skill["rps_base"] - skill["rps"]) / skill["rps_base"] * 100
+        c.append(card("Forecast accuracy", f"{skill['rps']:.3f}",
+                      f"RPS — {better:.0f}% better than guessing ({skill['n']} games)"))
+        c.append(card("Hit rate", f"{skill['avg_p_actual']:.0%}",
+                      "avg confidence in the result that actually happened"))
+    if bet:
+        sign = "+" if bet["profit"] >= 0 else "−"
+        c.append(card("Paper betting", f"{bet['won']}W–{bet['lost']}L",
+                      f"net {sign}€{abs(bet['profit']):.0f} · tracked honestly, no real money"))
+    return [f'<div class="cards">{"".join(c)}</div>', ""] if c else []
+
+
 def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, bet):
     L = [f"# 🏆 World Cup 2026 — Model Report · {date}", "",
          "*A fully-automated quant forecasting system: it rates every national team, "
@@ -334,8 +388,12 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
          "match, and grades its own forecasts against reality — no human in the loop. "
          "The honest headline finding: it is well-calibrated but not sharper than the "
          "betting market. Full write-up in PORTFOLIO.md.*", ""]
+    L += _cards(lb, skill, bet)
     if lb is not None:
-        L += ["## Championship leaderboard (blended forecast)", "",
+        L += ["## Championship leaderboard",
+              "> Each team's simulated chance of reaching each knockout round and lifting "
+              "the trophy, from 50,000 tournament simulations. Darker cells = more likely.",
+              "",
               "| Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |",
               "|---|---|--:|--:|--:|--:|--:|--:|"]
         for r in lb.itertuples(index=False):
@@ -344,12 +402,14 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
                      f"{_fmt_pct(r.reach_final)} | **{_fmt_pct(r.reach_champion)}** |")
         L.append("")
     if tracker:
-        L += ["## Title odds over time", "", tracker, ""]
+        L += ["## Title odds over time",
+              "> How each contender's championship chance has moved as results came in.",
+              "", tracker, ""]
     if kb:
-        L += ["## Round of 32 — model match detail", "",
-              "Advance % is the model's simulated probability of winning the tie (incl. "
-              "extra time / penalties); W/D/L, scorelines, BTTS and over-2.5 are the "
-              "90-minute Poisson–Dixon-Coles distribution. *(H) = host (home advantage).*",
+        L += ["## Round of 32 — match by match",
+              "> Advance % is the model's chance of winning the tie (including extra time "
+              "and penalties). W/D/L, scorelines, BTTS and O2.5 are the 90-minute picture. "
+              "(H) marks the host side, which gets home advantage.",
               "",
               "| Tie (advance %) | W/D/L 90′ | xG | Most likely scores | BTTS | O2.5 |",
               "|---|--:|--:|---|--:|--:|"]
@@ -361,23 +421,28 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
                      f"{r['btts']:.0%} | {r['over25']:.0%} |")
         L.append("")
     if fx is not None:
-        L += [f"## Next fixtures — {day} (model W/D/L)", "",
-              "| Match | xG | Home | Draw | Away |", "|---|---|--:|--:|--:|"]
+        L += [f"## Next fixtures — {day}",
+              "> The model's win / draw / loss call and expected goals for the next games.",
+              "", "| Match | xG | Home | Draw | Away |", "|---|---|--:|--:|--:|"]
         for r in fx.itertuples(index=False):
             L.append(f"| {r.home} v {r.away} | {r.xg_home:.2f}–{r.xg_away:.2f} | "
                      f"{_fmt_pct(r.p_home)} | {_fmt_pct(r.p_draw)} | {_fmt_pct(r.p_away)} |")
         L.append("")
     if skill is not None:
         s = skill
-        L += [f"## Model skill — {s['n']} resolved group games", "",
-              "| Metric | Model | Uniform baseline |", "|---|--:|--:|",
-              f"| RPS (lower better) | **{s['rps']:.4f}** | {s['rps_base']:.4f} |",
-              f"| Log-loss | **{s['log_loss']:.4f}** | {s['log_loss_base']:.4f} |",
+        L += [f"## How accurate is it? ({s['n']} resolved games)",
+              "> Pre-kickoff forecasts scored against reality, versus blindly guessing "
+              "33/33/33. On every metric, lower is better except hit rate.", "",
+              "| Metric | Model | Guessing |", "|---|--:|--:|",
+              f"| RPS | **{s['rps']:.4f}** | {s['rps_base']:.4f} |",
+              f"| log-loss | **{s['log_loss']:.4f}** | {s['log_loss_base']:.4f} |",
               f"| Brier | **{s['brier']:.4f}** | {s['brier_base']:.4f} |",
-              f"| Avg P(actual outcome) | **{s['avg_p_actual']:.1%}** | 33.3% |", ""]
+              f"| Hit rate (avg P of actual) | **{s['avg_p_actual']:.1%}** | 33.3% |", ""]
     if cal is not None:
-        L += ["### Calibration (forecast prob vs realized frequency)", "",
-              "| Bucket | n | Forecast | Realized |", "|---|--:|--:|--:|"]
+        L += ["### Calibration check",
+              "> When the model says X%, does it happen about X% of the time? Forecast "
+              "vs reality, bucketed.", "",
+              "| Forecast bucket | n | Model said | Actually happened |", "|---|--:|--:|--:|"]
         for r in cal.itertuples(index=False):
             L.append(f"| {r.bucket} | {int(r.n)} | {r.forecast:.1%} | {r.realized:.1%} |")
         L.append("")
@@ -389,26 +454,29 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
         L.append("")
     if mvm is not None:
         img, rows = mvm
-        L += ["## Model vs market (live efficiency study)", "",
-              "Championship odds: the model against Polymarket (overround stripped). "
-              "Points on the dashed line mean agreement; the table lists where they diverge most.",
+        L += ["## Model vs the betting market",
+              "> Championship odds: the model against Polymarket (overround stripped). "
+              "Points on the dashed line mean they agree; the table shows where they "
+              "disagree most.",
               "", img, "",
               "| Biggest disagreement | Model | Market | Gap |", "|---|--:|--:|--:|"]
         for t, mo, ma, d in rows[:8]:
             L.append(f"| {t} | {mo:.1%} | {ma:.1%} | {d*100:+.1f} |")
         L.append("")
         if eff is not None:
-            L += [f"**Advancement (pre-tournament priors, scored on who reached the "
-                  f"Round of 32, n={eff['n']}):** model Brier **{eff['model']:.3f}** vs "
-                  f"Polymarket **{eff['market']:.3f}** — "
-                  + ("the market edged the model" if eff['market'] < eff['model']
-                     else "the model edged the market")
-                  + ", consistent with the project's honest finding that the model is "
-                  "well-calibrated but not sharper than the market.", ""]
+            verdict = ("the market edged the model" if eff['market'] < eff['model']
+                       else "the model edged the market")
+            L += [f"**Who called advancement better?** Scored on who actually reached the "
+                  f"Round of 32 (n={eff['n']}): model Brier **{eff['model']:.3f}** vs "
+                  f"Polymarket **{eff['market']:.3f}** — {verdict}, consistent with the "
+                  f"project's honest finding that the model is well-calibrated but not "
+                  f"sharper than the market.", ""]
     if bet is not None:
         b = bet
         sign = "+" if b["profit"] >= 0 else ""
-        L += ["## Betting ledger (paper, honest)", "",
+        L += ["## Betting ledger (paper, honest)",
+              "> A paper-traded book — no real money — kept to test honestly whether any "
+              "model-vs-market edge is actually real. So far: no.", "",
               f"- **Settled:** {b['won']}W–{b['lost']}L  ·  staked {b['staked']:.0f}  ·  "
               f"returned {b['returned']:.0f}  ·  **net {sign}{b['profit']:.2f}** "
               f"(ROI {sign}{b['roi']:.1f}%)",
@@ -427,38 +495,90 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
     return "\n".join(L)
 
 
+CSS = """
+:root{--navy:#0a3d62;--ink:#1b2433;--muted:#5b6677;--line:#e6e8ef;--bg:#f4f6fb;
+  --card:#fff;--accent:#0a6cb3}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font:16px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;margin:0;
+  color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
+.topbar{position:sticky;top:0;z-index:20;display:flex;gap:14px;align-items:center;
+  padding:10px 18px;background:rgba(10,61,98,.97);color:#fff;overflow-x:auto;
+  box-shadow:0 1px 10px rgba(0,0,0,.14);scrollbar-width:none}
+.topbar::-webkit-scrollbar{display:none}
+.topbar .brand{font-weight:700;white-space:nowrap;font-size:15px}
+.topbar nav{display:flex;gap:4px}
+.topbar a{color:#cfe3f3;text-decoration:none;font-size:13px;white-space:nowrap;
+  padding:5px 10px;border-radius:99px}
+.topbar a:hover,.topbar a:focus{background:rgba(255,255,255,.16);color:#fff;outline:none}
+main{max-width:900px;margin:0 auto;padding:6px 18px 64px}
+.datebadge{display:inline-block;margin:22px 0 0;background:#e7eff7;color:var(--navy);
+  font-weight:600;font-size:12px;padding:4px 11px;border-radius:99px;letter-spacing:.3px}
+h1{font-size:clamp(25px,5.5vw,34px);letter-spacing:-.6px;margin:8px 0 2px;line-height:1.15}
+h2{font-size:clamp(19px,3.6vw,24px);color:var(--navy);margin:42px 0 0;padding-top:14px;
+  border-top:1px solid var(--line);scroll-margin-top:60px}
+h3{font-size:17px;color:#2c5f86;margin:22px 0 0;scroll-margin-top:60px}
+p{margin:11px 0}.li{margin:5px 0}
+.sub{color:var(--muted);font-size:14.5px;margin:6px 0 4px;max-width:64ch}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+abbr{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}
+strong{color:var(--navy)}
+.lede{margin:16px 0;padding:16px 18px;background:var(--card);border:1px solid var(--line);
+  border-left:4px solid var(--navy);border-radius:12px;font-size:15px;color:#33405a;
+  box-shadow:0 1px 4px rgba(10,61,98,.06)}
+.lede a{font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+  box-shadow:0 1px 4px rgba(10,61,98,.05)}
+.card .k{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
+.card .v{font-size:25px;font-weight:700;color:var(--navy);margin:4px 0;line-height:1.1}
+.card .s{font-size:12.5px;color:var(--muted);line-height:1.4}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0;border:1px solid var(--line);
+  border-radius:14px;box-shadow:0 1px 4px rgba(10,61,98,.05)}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--card)}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{background:var(--navy);color:#fff;border:none;font-weight:600}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#eef4fa}
+img{max-width:100%;height:auto;display:block;margin:14px 0;border:1px solid var(--line);
+  border-radius:14px;background:#fff;padding:6px}
+hr{border:none;border-top:1px solid var(--line);margin:36px 0 14px}
+footer{color:var(--muted);font-size:12.5px;max-width:66ch;line-height:1.5}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+"""
+
+
 def md_to_html(md, date):
-    """Tiny self-contained renderer for the subset of Markdown we emit."""
-    css = """
-    body{font:15px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-      max-width:860px;margin:40px auto;padding:0 20px;color:#1a1a2e;background:#fafafe}
-    h1{font-size:27px;border-bottom:3px solid #0a3d62;padding-bottom:10px;letter-spacing:-.3px}
-    h2{font-size:20px;margin-top:34px;color:#0a3d62}
-    h3{font-size:16px;color:#3c6382}
-    table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;
-      box-shadow:0 1px 3px rgba(10,61,98,.07);border-radius:6px;overflow:hidden}
-    th,td{padding:7px 10px;border-bottom:1px solid #e1e1ee;text-align:right}
-    th:first-child,td:first-child{text-align:left}
-    thead th{background:#0a3d62;color:#fff;border:none}
-    tbody tr:hover{background:#eef3f8}
-    strong{color:#0a3d62}
-    em{color:#777;font-size:13px}
-    a{color:#0a6cb3;text-decoration:none}
-    a:hover{text-decoration:underline}
-    hr{border:none;border-top:1px solid #ddd;margin:30px 0}
-    .tag{display:inline-block;background:#0a3d62;color:#fff;padding:2px 10px;
-      border-radius:12px;font-size:12px;letter-spacing:.5px}
-    .lede{margin:18px 0 6px;padding:16px 18px;background:#fff;border:1px solid #e1e1ee;
-      border-left:4px solid #0a3d62;border-radius:8px;font-size:14.5px;color:#33384a;
-      box-shadow:0 1px 3px rgba(10,61,98,.06)}
-    .lede a{font-weight:600}
-    """
-    body, in_tbl, lede_done = [], False, False
+    """Self-contained renderer for the Markdown subset the report emits, styled for
+    clarity and for reading on a phone or a desktop."""
+    body, in_tbl, lede_done, toc, seen = [], False, False, [], {}
+    term_re = re.compile(r"\b(" + "|".join(re.escape(t) for t in
+                         sorted(GLOSSARY, key=len, reverse=True)) + r")\b")
 
     def inline(s):
         s = html.escape(s)
         while "**" in s:
             s = s.replace("**", "<strong>", 1).replace("**", "</strong>", 1)
+        return term_re.sub(lambda m: f'<abbr title="{GLOSSARY[m.group(1)]}">{m.group(1)}</abbr>', s)
+
+    def cell(c, head=False):
+        if head:
+            return f"<th>{inline(c)}</th>"
+        style = ""
+        m = re.fullmatch(r"\*{0,2}(\d{1,3}(?:\.\d+)?)%\*{0,2}", c.strip())
+        if m:  # shade single-percentage cells: darker = more likely
+            v = min(float(m.group(1)), 100) / 100
+            style = (f' style="background:rgba(10,61,98,{0.06 + 0.46 * v:.2f})'
+                     + (';color:#fff"' if v > 0.62 else '"'))
+        return f"<td{style}>{inline(c)}</td>"
+
+    def slug(t):
+        s = re.sub(r"[^a-z0-9]+", "-", t.lower()).strip("-") or "sec"
+        if s in seen:
+            seen[s] += 1; s = f"{s}-{seen[s]}"
+        else:
+            seen[s] = 0
         return s
 
     for ln in md.split("\n"):
@@ -467,25 +587,28 @@ def md_to_html(md, date):
             if set("".join(cells)) <= set("-:| "):
                 continue
             if not in_tbl:
-                body.append("<table><thead><tr>"
-                            + "".join(f"<th>{inline(c)}</th>" for c in cells)
-                            + "</tr></thead><tbody>")
+                body.append('<div class="tw"><table><thead><tr>'
+                            + "".join(cell(c, True) for c in cells) + "</tr></thead><tbody>")
                 in_tbl = True
             else:
-                body.append("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in cells) + "</tr>")
+                body.append("<tr>" + "".join(cell(c) for c in cells) + "</tr>")
             continue
         if in_tbl:
-            body.append("</tbody></table>"); in_tbl = False
-        if ln.lstrip().startswith("<"):     # raw HTML passthrough (embedded charts)
+            body.append("</tbody></table></div>"); in_tbl = False
+        if ln.lstrip().startswith("<"):     # raw HTML passthrough (cards, charts)
             body.append(ln); continue
         if ln.startswith("# "):
             body.append(f"<h1>{inline(ln[2:])}</h1>")
         elif ln.startswith("## "):
-            body.append(f"<h2>{inline(ln[3:])}</h2>")
+            sid = slug(ln[3:])
+            toc.append((sid, re.split(r"[(—]", ln[3:])[0].strip()))
+            body.append(f'<h2 id="{sid}">{inline(ln[3:])}</h2>')
         elif ln.startswith("### "):
             body.append(f"<h3>{inline(ln[4:])}</h3>")
+        elif ln.startswith("> "):
+            body.append(f'<p class="sub">{inline(ln[2:])}</p>')
         elif ln.startswith("- "):
-            body.append(f"<p style='margin:4px 0'>• {inline(ln[2:])}</p>")
+            body.append(f'<p class="li">• {inline(ln[2:])}</p>')
         elif ln.strip() == "---":
             body.append("<hr>")
         elif ln.startswith("*") and ln.endswith("*"):
@@ -496,15 +619,23 @@ def md_to_html(md, date):
                     f"<a href='{REPO}/blob/main/PORTFOLIO.md'>Full write-up</a></div>")
                 lede_done = True
             else:
-                body.append(f"<em>{inline(ln.strip('*'))}</em>")
+                body.append(f"<footer>{inline(ln.strip('*'))}</footer>")
         elif ln.strip():
             body.append(f"<p>{inline(ln)}</p>")
     if in_tbl:
-        body.append("</tbody></table>")
-    return (f"<!doctype html><html><head><meta charset='utf-8'>"
-            f"<title>WC2026 Model Report · {date}</title><style>{css}</style></head>"
-            f"<body><div class='tag'>AUTO-GENERATED · {date}</div>"
-            + "\n".join(body) + "</body></html>")
+        body.append("</tbody></table></div>")
+
+    nav = "".join(f'<a href="#{i}">{html.escape(l)}</a>' for i, l in toc)
+    head = (f'<meta charset="utf-8">'
+            f'<meta name="viewport" content="width=device-width,initial-scale=1">'
+            f'<meta name="description" content="Automated 2026 World Cup forecasting '
+            f'model — a live, self-grading report.">'
+            f'<title>WC2026 Model Report · {date}</title><style>{CSS}</style>')
+    return (f'<!doctype html><html lang="en"><head>{head}</head><body>'
+            f'<header class="topbar"><span class="brand">⚽ WC2026 Model</span>'
+            f'<nav>{nav}</nav></header><main>'
+            f'<span class="datebadge">🔄 Auto-updated twice daily · {date}</span>'
+            + "\n".join(body) + "</main></body></html>")
 
 
 def _try(fn):
