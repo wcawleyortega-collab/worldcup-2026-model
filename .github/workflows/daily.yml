@@ -1,0 +1,47 @@
+name: daily update
+
+# Re-forecast the tournament and republish the report on a schedule, in the
+# cloud — so the live GitHub Pages report self-updates without the local machine.
+on:
+  schedule:
+    - cron: "30 6 * * *"    # 06:30 UTC
+    - cron: "30 23 * * *"   # 23:30 UTC
+  workflow_dispatch:         # allow manual "Run workflow" from the Actions tab
+
+permissions:
+  contents: write            # the job commits the refreshed report back
+
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pandas numpy scipy matplotlib
+
+      - name: Re-forecast + regenerate report
+        run: |
+          python update_predictions.py 50000
+          python daily_report.py
+
+      - name: Commit refreshed outputs
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/ outputs/ data/results.csv data/shootouts.csv data/polymarket_history.csv
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+          else
+            git commit -m "chore: daily auto-update ($(date -u +%Y-%m-%d))"
+            git push
+          fi

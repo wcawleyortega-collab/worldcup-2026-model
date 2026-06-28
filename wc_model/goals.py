@@ -27,7 +27,7 @@ class GoalsModel:
         self.rho = 0.0    # Dixon-Coles low-score correction
 
     # ---- fitting -----------------------------------------------------------
-    def fit(self, elo_log, since="1990-01-01"):
+    def fit(self, elo_log, since="2010-01-01"):
         df = elo_log[elo_log["date"] >= since]
         # two rows per match: (team perspective, opponent perspective)
         we = np.concatenate([df["we_home"].values, 1 - df["we_home"].values])

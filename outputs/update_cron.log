@@ -1,52 +1,120 @@
-=== Update 2026-06-11 ===
-  group games played: 0/72; knockout results: 0
-  applied bookmaker deltas at weight 0.5
-
-Team                      R32    R16     QF     SF  Final  Champ
-Spain                   99.3%  77.8%  57.8%  46.3%  32.3%  21.4%
-Argentina               97.6%  67.1%  51.7%  35.9%  22.6%  13.1%
-France                  95.7%  73.6%  50.8%  34.3%  20.5%  12.2%
-England                 96.6%  68.9%  44.3%  27.4%  16.2%   8.6%
-Brazil                  94.6%  62.1%  39.4%  22.9%  12.4%   6.5%
-Portugal                93.4%  63.7%  38.6%  22.3%  12.2%   6.2%
-Germany                 93.0%  58.2%  30.1%  16.4%   7.7%   3.6%
-Mexico                  93.6%  60.9%  32.3%  15.9%   7.6%   3.3%
-Colombia                88.9%  54.6%  28.5%  14.9%   7.3%   3.1%
-Netherlands             89.3%  49.3%  29.6%  14.9%   6.8%   3.0%
-Norway                  78.9%  45.1%  23.2%  10.9%   4.6%   1.9%
-Ecuador                 88.4%  49.1%  23.2%  11.2%   4.7%   1.8%
-=== Update 2026-06-12 ===
-Traceback (most recent call last):
-  File "/Users/williamcawley/Desktop/WorldCupModel/update_predictions.py", line 156, in <module>
-    main()
-    ~~~~^^
-  File "/Users/williamcawley/Desktop/WorldCupModel/update_predictions.py", line 93, in main
-    refresh_data()
-    ~~~~~~~~~~~~^^
-  File "/Users/williamcawley/Desktop/WorldCupModel/update_predictions.py", line 39, in refresh_data
-    subprocess.run(["curl", "-sL", "--fail", "-o", os.path.join(BASE, "data", name), url],
-    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                   check=True, timeout=120)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/williamcawley/.local/share/uv/python/cpython-3.13.13-macos-aarch64-none/lib/python3.13/subprocess.py", line 577, in run
-    raise CalledProcessError(retcode, process.args,
-                             output=stdout, stderr=stderr)
-subprocess.CalledProcessError: Command '['curl', '-sL', '--fail', '-o', '/Users/williamcawley/Desktop/WorldCupModel/data/results.csv', 'https://raw.githubusercontent.com/martj42/international_results/master/results.csv']' returned non-zero exit status 6.
-=== Update 2026-06-12 ===
+=== Update 2026-06-15 ===
   polymarket: logged 144 prices {'advance': 48, 'outright': 48, 'group_winner': 48}
-  group games played: 2/72; knockout results: 0
+  group games played: 12/72; knockout results: 0
   applied bookmaker deltas at weight 0.5
 
 Team                      R32    R16     QF     SF  Final  Champ
-Spain                   99.3%  77.1%  57.2%  45.8%  31.8%  20.8%
-Argentina               97.6%  67.8%  52.4%  36.5%  23.0%  13.5%
-France                  95.6%  73.6%  50.7%  34.4%  20.5%  12.4%
-England                 96.4%  69.2%  43.4%  26.9%  15.5%   8.2%
-Brazil                  94.6%  61.8%  39.2%  22.8%  12.3%   6.4%
-Portugal                93.5%  63.4%  38.8%  22.4%  12.1%   6.2%
-Mexico                  99.2%  65.9%  35.1%  17.7%   8.4%   3.8%
-Germany                 93.0%  57.9%  30.1%  16.6%   7.8%   3.6%
-Colombia                88.9%  54.2%  28.2%  15.0%   7.1%   3.2%
-Netherlands             89.4%  49.5%  29.1%  14.5%   6.7%   3.1%
-Ecuador                 88.4%  48.9%  23.0%  11.0%   4.5%   1.8%
-Norway                  79.1%  45.3%  23.0%  10.7%   4.6%   1.7%
+Spain                   99.3%  77.5%  57.8%  45.5%  31.5%  20.8%
+Argentina               97.6%  67.5%  51.2%  35.8%  22.8%  13.2%
+France                  95.5%  73.1%  50.0%  34.0%  20.1%  12.1%
+England                 96.4%  68.7%  42.5%  26.7%  15.3%   8.1%
+Portugal                93.3%  62.8%  38.9%  22.0%  12.2%   6.0%
+Brazil                  93.9%  58.3%  37.5%  21.3%  11.3%   5.9%
+Germany                 99.7%  62.1%  32.7%  18.6%   8.8%   4.3%
+Mexico                  99.0%  65.6%  35.2%  18.1%   8.7%   3.9%
+Colombia                88.6%  53.9%  28.6%  15.0%   7.4%   3.3%
+Netherlands             90.3%  48.3%  28.1%  14.3%   6.5%   2.9%
+United States           98.8%  63.1%  35.1%  14.8%   6.8%   2.9%
+Morocco                 87.6%  45.2%  24.7%  11.4%   4.9%   2.0%
+=== Update 2026-06-15 ===
+  polymarket: logged 144 prices {'advance': 48, 'outright': 48, 'group_winner': 48}
+  group games played: 12/72; knockout results: 0
+  applied bookmaker deltas at weight 0.5
+
+Team                      R32    R16     QF     SF  Final  Champ
+Spain                   99.3%  77.5%  57.8%  45.5%  31.5%  20.8%
+Argentina               97.6%  67.5%  51.2%  35.8%  22.8%  13.2%
+France                  95.5%  73.1%  50.0%  34.0%  20.1%  12.1%
+England                 96.4%  68.7%  42.5%  26.7%  15.3%   8.1%
+Portugal                93.3%  62.8%  38.9%  22.0%  12.2%   6.0%
+Brazil                  93.9%  58.3%  37.5%  21.3%  11.3%   5.9%
+Germany                 99.7%  62.1%  32.7%  18.6%   8.8%   4.3%
+Mexico                  99.0%  65.6%  35.2%  18.1%   8.7%   3.9%
+Colombia                88.6%  53.9%  28.6%  15.0%   7.4%   3.3%
+Netherlands             90.3%  48.3%  28.1%  14.3%   6.5%   2.9%
+United States           98.8%  63.1%  35.1%  14.8%   6.8%   2.9%
+Morocco                 87.6%  45.2%  24.7%  11.4%   4.9%   2.0%
+=== Update 2026-06-16 ===
+WARN: fetch of results.csv failed (Command '['curl', '-sL', '--fail', '--connect-timeout', '20', '--max-time', '90', '--retry', '3', '--retry-delay', '5', '-o', '/Users/williamcawley/Desktop/WorldCupModel/data/results.csv.tmp', 'https://raw.githubusercontent.com/martj42/international_results/master/results.csv']' returned non-zero exit status 28.); using cached copy
+WARN: fetch of shootouts.csv failed (Command '['curl', '-sL', '--fail', '--connect-timeout', '20', '--max-time', '90', '--retry', '3', '--retry-delay', '5', '-o', '/Users/williamcawley/Desktop/WorldCupModel/data/shootouts.csv.tmp', 'https://raw.githubusercontent.com/martj42/international_results/master/shootouts.csv']' returned non-zero exit status 28.); using cached copy
+  warn: world-cup-team-to-advance-to-knockout-stages: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-a-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-b-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-c-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-d-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-e-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-f-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-g-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-h-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-i-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-j-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-k-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  warn: world-cup-group-l-winner: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+  polymarket: no rows fetched
+  group games played: 12/72; knockout results: 0
+  applied bookmaker deltas at weight 0.5
+
+Team                      R32    R16     QF     SF  Final  Champ
+Spain                   99.3%  77.5%  57.8%  45.5%  31.5%  20.8%
+Argentina               97.6%  67.5%  51.2%  35.8%  22.8%  13.2%
+France                  95.5%  73.1%  50.0%  34.0%  20.1%  12.1%
+England                 96.4%  68.7%  42.5%  26.7%  15.3%   8.1%
+Portugal                93.3%  62.8%  38.9%  22.0%  12.2%   6.0%
+Brazil                  93.9%  58.3%  37.5%  21.3%  11.3%   5.9%
+Germany                 99.7%  62.1%  32.7%  18.6%   8.8%   4.3%
+Mexico                  99.0%  65.6%  35.2%  18.1%   8.7%   3.9%
+Colombia                88.6%  53.9%  28.6%  15.0%   7.4%   3.3%
+Netherlands             90.3%  48.3%  28.1%  14.3%   6.5%   2.9%
+United States           98.8%  63.1%  35.1%  14.8%   6.8%   2.9%
+Morocco                 87.6%  45.2%  24.7%  11.4%   4.9%   2.0%
+=== Update 2026-06-17 ===
+  polymarket: logged 144 prices {'advance': 48, 'outright': 48, 'group_winner': 48}
+  group games played: 16/72; knockout results: 0
+  applied bookmaker deltas at weight 0.5
+
+Team                      R32    R16     QF     SF  Final  Champ
+Spain                   95.4%  70.5%  50.3%  37.8%  24.9%  15.7%
+Argentina               97.6%  71.7%  54.6%  38.3%  24.3%  14.6%
+France                  95.3%  72.9%  49.2%  33.5%  20.8%  12.5%
+England                 96.5%  68.7%  43.6%  27.2%  15.8%   8.8%
+Portugal                93.2%  62.8%  40.1%  22.9%  12.7%   6.5%
+Brazil                  94.0%  57.9%  37.2%  21.2%  11.5%   6.2%
+Germany                 99.7%  62.7%  33.3%  18.9%   9.7%   4.5%
+Mexico                  99.0%  65.6%  35.0%  18.0%   8.7%   4.0%
+Colombia                88.5%  54.1%  30.4%  16.1%   7.9%   3.5%
+United States           98.6%  62.9%  35.1%  15.8%   7.2%   3.2%
+Netherlands             90.6%  48.7%  28.3%  14.2%   6.8%   3.1%
+Morocco                 87.0%  44.7%  24.4%  11.5%   5.1%   2.1%
+=== Update 2026-06-17 ===
+  warn: world-cup-team-to-advance-to-knockout-stages: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-a-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-b-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-c-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-d-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-e-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-f-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-g-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-h-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-i-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-j-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-k-winner: <urlopen error [Errno 54] Connection reset by peer>
+  warn: world-cup-group-l-winner: <urlopen error [Errno 54] Connection reset by peer>
+  polymarket: no rows fetched
+  group games played: 16/72; knockout results: 0
+  applied bookmaker deltas at weight 0.5
+
+Team                      R32    R16     QF     SF  Final  Champ
+Spain                   95.4%  70.5%  50.3%  37.8%  24.9%  15.7%
+Argentina               97.6%  71.7%  54.6%  38.3%  24.3%  14.6%
+France                  95.3%  72.9%  49.2%  33.5%  20.8%  12.5%
+England                 96.5%  68.7%  43.6%  27.2%  15.8%   8.8%
+Portugal                93.2%  62.8%  40.1%  22.9%  12.7%   6.5%
+Brazil                  94.0%  57.9%  37.2%  21.2%  11.5%   6.2%
+Germany                 99.7%  62.7%  33.3%  18.9%   9.7%   4.5%
+Mexico                  99.0%  65.6%  35.0%  18.0%   8.7%   4.0%
+Colombia                88.5%  54.1%  30.4%  16.1%   7.9%   3.5%
+United States           98.6%  62.9%  35.1%  15.8%   7.2%   3.2%
+Netherlands             90.6%  48.7%  28.3%  14.2%   6.8%   3.1%
+Morocco                 87.0%  44.7%  24.4%  11.5%   5.1%   2.1%

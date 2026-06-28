@@ -1,4 +1,23 @@
-# 2026 World Cup Prediction Model
+# ⚽ 2026 World Cup Forecasting & Market-Efficiency Engine
+
+[![daily update](https://github.com/wcawleyortega-collab/worldcup-2026-model/actions/workflows/daily.yml/badge.svg)](https://github.com/wcawleyortega-collab/worldcup-2026-model/actions/workflows/daily.yml)
+
+**A fully-automated quant forecasting system: it rates every team, runs 50,000 Monte-Carlo
+tournament simulations daily, prices every match, scores itself against reality, and
+publishes a live self-updating report — no human in the loop.**
+
+### 🔴 [**View the live, auto-updating report →**](https://wcawleyortega-collab.github.io/worldcup-2026-model/)
+
+[![Live model report](docs/report-preview.png)](https://wcawleyortega-collab.github.io/worldcup-2026-model/)
+
+> Scored on **60+ resolved matches** (forecasts logged *before* kickoff): RPS **0.176** vs
+> 0.222 uniform baseline, avg P(actual outcome) **44.3%** vs 33.3% chance, and well-calibrated
+> bucket-by-bucket. The honest headline finding — the model is calibrated but **not sharper than
+> the market** — and what this project demonstrates are written up in **[`PORTFOLIO.md`](PORTFOLIO.md)**.
+
+---
+
+## How the model works
 
 A research-guided forecasting model for the 2026 FIFA World Cup (USA/Mexico/Canada, June 11 – July 19, 2026), built on the architecture that the academic and industry literature converges on: an **Elo rating core → Poisson goal model → Dixon-Coles draw correction → Monte Carlo tournament simulation**. See `RESEARCH.md` for the full survey of world-class systems this design follows (FiveThirtyEight SPI, eloratings.net, Dixon-Coles 1997, the Zeileis/Groll bookmaker-consensus + hybrid random forest line of work, Opta, Gracenote).
 

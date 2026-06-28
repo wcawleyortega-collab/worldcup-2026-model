@@ -35,9 +35,23 @@ N_SIMS = int(sys.argv[1]) if len(sys.argv) > 1 else 50000
 
 
 def refresh_data():
+    """Fetch latest results/shootouts. A failed fetch is non-fatal: keep the
+    cached copy and warn, so one transient curl timeout can't stall the
+    pipeline for days (as it did June 13-15, exit 28)."""
     for url, name in [(RESULTS_URL, "results.csv"), (SHOOTOUTS_URL, "shootouts.csv")]:
-        subprocess.run(["curl", "-sL", "--fail", "-o", os.path.join(BASE, "data", name), url],
-                       check=True, timeout=120)
+        dest = os.path.join(BASE, "data", name)
+        tmp = dest + ".tmp"
+        try:
+            subprocess.run(
+                ["curl", "-sL", "--fail", "--connect-timeout", "20",
+                 "--max-time", "90", "--retry", "3", "--retry-delay", "5",
+                 "-o", tmp, url],
+                check=True, timeout=300)
+            os.replace(tmp, dest)  # atomic; only overwrite cache on success
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+            print(f"WARN: fetch of {name} failed ({e}); using cached copy", flush=True)
 
 
 def knockout_winners(ko: pd.DataFrame) -> dict:
@@ -110,6 +124,7 @@ def main():
 
     fixtures = [(h, a, neu) for h, a, neu in
                 group[["home_team", "away_team", "neutral"]].itertuples(index=False)]
+    fixture_date = {(r.home_team, r.away_team): str(r.date) for r in group.itertuples()}
     played = {(r.home_team, r.away_team): (int(r.home_score), int(r.away_score))
               for r in group.dropna(subset=["home_score", "away_score"]).itertuples()}
     ko_res = knockout_winners(ko)
@@ -141,13 +156,35 @@ def main():
     tab.drop(columns="date").to_csv(os.path.join(BASE, "outputs", "team_probabilities.csv"),
                                     index=False)
 
+    # Per-match availability adjustments (suspensions/injuries the Elo prior can't
+    # see). data/availability.csv: date,team,delta_elo,note — negative delta_elo
+    # weakens the team for that one fixture only. Applied to the logged forecast
+    # (what we price bets off); season-long ratings stay untouched because a
+    # suspension is a one-game effect, not a lasting strength change.
+    avail_path = os.path.join(BASE, "data", "availability.csv")
+    avail = {}
+    if os.path.exists(avail_path):
+        av = pd.read_csv(avail_path)
+        avail = {(str(r.date), r.team): float(r.delta_elo) for r in av.itertuples()}
+        if avail:
+            print(f"  loaded {len(avail)} availability adjustment(s)")
+
     # log today's forecasts for not-yet-played group games (for later scoring)
     from wc_model.elo import win_expectancy
     mrows = []
     for h, a, neu in fixtures:
         if (h, a) in played:
             continue
-        we = win_expectancy(sim._dr(h, a, not neu))
+        dr = sim._dr(h, a, not neu)
+        # availability is tied to the real match date, not the forecast date,
+        # so a one-game suspension doesn't bleed onto the team's later fixtures
+        mdate = fixture_date.get((h, a), today)
+        adj = avail.get((mdate, h), 0.0) - avail.get((mdate, a), 0.0)
+        if adj:
+            print(f"  availability: {h} v {a} ({mdate}) dr {dr:+.0f} -> {dr + adj:+.0f} "
+                  f"(home {avail.get((mdate, h), 0.0):+.0f}, "
+                  f"away {avail.get((mdate, a), 0.0):+.0f})")
+        we = win_expectancy(dr + adj)
         lam_h, lam_a = gm.expected_goals(we, not neu)
         pw, pdr, pl = gm.outcome_probs(we, not neu)
         mrows.append((today, h, a, round(lam_h, 3), round(lam_a, 3),
