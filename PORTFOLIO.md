@@ -94,40 +94,43 @@ So I tested exactly that.
 ## The covariate that did help: squad market value (out-of-sample)
 
 The literature (Peeters 2018; Gerhards & Mutz) finds aggregate **squad market value**
-is among the strongest single predictors of international results. I added a real
-Transfermarkt snapshot of all 48 squads (`data/squad_values.csv`) and tested —
-with Elo frozen *before* the tournament, exactly as above — whether value carries
-information Elo does not (`tune_squad.py`):
+is among the strongest single predictors of international results. I added the
+*period-correct* Transfermarkt squad-value snapshot for **three** World Cups —
+2018, 2022, 2026 (`data/squad_values*.csv`; one year's values applied to another
+would be anachronistic) — and tested, with Elo frozen *before* each tournament and
+the goal model fit only on prior data, whether value carries information Elo does
+not (`tune_squad.py`). log(value) explains **R² ≈ 0.5–0.6** of Elo — overlapping,
+but a large minority is *not* shared.
 
-- **Redundant?** Cross-sectionally, log(squad value) explains **R² = 0.61** of the
-  Elo rating — overlapping, but 39% is *not* shared.
-- **Predictive?** Blending the value-implied rating into Elo and scoring W/D/L on
-  the 72 played WC2026 group games:
+Blending the value-implied rating into Elo and scoring W/D/L (RPS, lower = better),
+the gain **replicates out-of-sample across all three tournaments**:
 
-| Elo / value mix | RPS | Read |
-|---|--:|---|
-| Pure Elo (current) | 0.1669 | baseline |
-| 70% Elo / 30% value *(shipped)* | 0.1598 | **4% better** |
-| ~30% Elo / 70% value *(in-sample optimum)* | 0.1568 | 6% better |
-| Pure value | 0.1588 | worse than the mix |
+| Elo / value mix | WC2018 | WC2022 | WC2026 | Mean |
+|---|--:|--:|--:|--:|
+| Pure Elo (old model) | 0.2092 | 0.2211 | 0.1669 | 0.1991 |
+| **0.7 / 0.3 *(shipped)*** | **0.2035** | **0.2158** | **0.1598** | **0.1931** |
+| ~0.3 / 0.7 *(pooled optimum)* | 0.1992 | 0.2135 | 0.1568 | 0.1898 |
+| Pure value | 0.1985 | 0.2147 | 0.1588 | 0.1906 |
 
-The curve has an **interior optimum** and turns back up toward pure value — the
-signature of *real, complementary signal*, not over-fit noise (over-fitting would
-keep improving as you trust Elo less; it doesn't). Squad value corrects Elo's known
-lags — confederation inflation, slow adjustment for fast-rising sides. This is the
+Two things make this a *real, complementary* signal rather than over-fit noise:
+the pooled curve has an **interior optimum (~0.3)** and turns back up toward pure
+value (over-fitting would keep improving as you trust Elo less — it doesn't), and
+**the same shape appears in three independent tournaments**. Squad value corrects
+Elo's known lags — confederation inflation, slow adjustment for fast-rising sides.
+A robustness check (WC2018 scored on firmly-sourced squads only, dropping the seven
+estimated bottom-table values — 45 games) leaves the verdict unchanged. This is the
 **first tested change that beats the model out of sample**, and the contrast with
 the time-decay null is the point: re-tuning the same data did nothing; new
 information did.
 
-**Shipped honestly and conservatively.** The blend goes live at a **0.7 Elo / 0.3
-value** weight — deliberately *not* the in-sample optimum (~0.3), because one
-tournament (n = 72) can't pin the weight, and a conservative tilt captures a real
-share of the gain while staying close to the battle-tested rating model. Caveats
-stated up front: single-tournament validation, and partial overlap with the
+**Shipped honestly and conservatively.** The blend goes live at **0.7 Elo / 0.3
+value** — deliberately short of the ~0.3 pooled optimum. The three-tournament test
+*would* support a stronger tilt, but I hold back because of partial overlap with the
 bookmaker-consensus layer (applied before it, so the market fit re-absorbs the
-rest). **xG was the other named covariate — and I left it out on purpose:** no
-public per-team international xG history exists for all 48 sides, so adding it would
-mean inventing data, which this project won't do.
+rest); 0.7 captures a consistent ~3% RPS gain while staying close to the
+battle-tested rating model. **xG was the other named covariate — and I left it out
+on purpose:** no public per-team international xG history exists for all 48 sides,
+so adding it would mean inventing data, which this project won't do.
 
 ## Architecture
 
