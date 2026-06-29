@@ -78,14 +78,14 @@
 
 | Biggest disagreement | Model | Market | Gap |
 |---|--:|--:|--:|
-| France | 16.6% | 23.0% | -6.4 |
-| Argentina | 15.9% | 20.4% | -4.5 |
-| Brazil | 7.0% | 5.5% | +1.4 |
+| France | 16.6% | 22.7% | -6.1 |
+| Argentina | 15.9% | 19.2% | -3.2 |
+| Japan | 1.1% | 0.0% | +1.0 |
 | Mexico | 2.2% | 1.2% | +1.0 |
 | Canada | 1.2% | 0.2% | +0.9 |
-| Switzerland | 1.8% | 0.9% | +0.8 |
-| Morocco | 2.1% | 1.3% | +0.8 |
-| England | 10.7% | 10.0% | +0.7 |
+| Switzerland | 1.8% | 0.8% | +0.9 |
+| Morocco | 2.1% | 1.2% | +0.9 |
+| Portugal | 5.5% | 6.3% | -0.8 |
 
 **Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.180** vs Polymarket **0.154** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
 
