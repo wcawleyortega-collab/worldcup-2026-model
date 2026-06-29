@@ -1,0 +1,8 @@
+# Pinned runtime dependencies. Reproduce the model + report from a clean clone:
+#   python -m venv .venv
+#   .venv/bin/python -m pip install -r requirements.txt
+#   .venv/bin/python update_predictions.py 50000 && .venv/bin/python daily_report.py
+numpy==2.4.6
+pandas==3.0.3
+scipy==1.17.1
+matplotlib==3.10.9

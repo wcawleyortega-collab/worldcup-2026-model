@@ -1,6 +1,7 @@
 # ⚽ 2026 World Cup Forecasting & Market-Efficiency Engine
 
 [![daily update](https://github.com/wcawleyortega-collab/worldcup-2026-model/actions/workflows/daily.yml/badge.svg)](https://github.com/wcawleyortega-collab/worldcup-2026-model/actions/workflows/daily.yml)
+[![ci](https://github.com/wcawleyortega-collab/worldcup-2026-model/actions/workflows/ci.yml/badge.svg)](https://github.com/wcawleyortega-collab/worldcup-2026-model/actions/workflows/ci.yml)
 
 **A fully-automated quant forecasting system: it rates every team, runs 50,000 Monte-Carlo
 tournament simulations daily, prices every match, scores itself against reality, and
@@ -57,8 +58,17 @@ These are in the range achieved by the published academic models on the same tou
 ## Usage
 
 ```bash
-uv venv && uv pip install pandas numpy scipy matplotlib
+python -m venv .venv && .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python run_predictions.py 50000   # arg = number of simulations
+```
+
+Dependencies are pinned in `requirements.txt` for reproducible runs. To run the
+test suite covering the core math (Elo, the Poisson/Dixon-Coles goal model, the
+market and squad layers):
+
+```bash
+.venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python -m pytest
 ```
 
 Outputs land in `outputs/`:

@@ -8,3 +8,6 @@
 *.sh   diff text
 *.html diff text
 *.txt  diff text
+.gitignore   diff text
+.gitattributes diff text
+LICENSE      diff text

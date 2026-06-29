@@ -5,7 +5,7 @@
 <div class="cards"><div class="card"><div class="k">Current favourite</div><div class="v">France</div><div class="s">16.6% chance to win the cup</div></div><div class="card"><div class="k">Forecast accuracy</div><div class="v"><span class="ticker" data-to="0.16676064020833334" data-dec="3" data-suffix="" data-prefix="">0.167</span></div><div class="s">RPS — 25% better than guessing (72 games)</div></div><div class="card"><div class="k">Hit rate</div><div class="v"><span class="ticker" data-to="45.038611111111116" data-dec="0" data-suffix="%" data-prefix="">45%</span></div><div class="s">avg confidence in the result that actually happened</div></div><div class="card"><div class="k">Paper betting</div><div class="v">2W–2L</div><div class="s">net −€90 · tracked honestly, no real money</div></div></div>
 
 ## Championship leaderboard
-> Each team's simulated chance of reaching each knockout round and lifting the trophy, from 50,000 tournament simulations. Darker cells = more likely.
+> Each team's simulated chance of reaching each knockout round and lifting the trophy, from 50,000 tournament simulations. Darker cells = more likely. Each probability carries a Monte-Carlo 95% margin of ≤ ±0.4 pp from the 50,000 draws.
 
 | Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |
 |---|---|--:|--:|--:|--:|--:|--:|
@@ -59,7 +59,9 @@
 | Hit rate (avg P of actual) | **45.0%** | 33.3% |
 
 ### Calibration check
-> When the model says X%, does it happen about X% of the time? Forecast vs reality, bucketed.
+> When the model says X%, does it happen about X% of the time? Points on the diagonal are perfectly calibrated; the bars are 95% bands implied by each bucket's sample size, and bigger dots hold more games.
+
+*(chart — view the HTML report)*
 
 | Forecast bucket | n | Model said | Actually happened |
 |---|--:|--:|--:|
@@ -86,6 +88,8 @@
 | England | 10.7% | 10.0% | +0.7 |
 
 **Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.180** vs Polymarket **0.154** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
+
+> Brier skill score versus a no-skill climatology forecast (always predict the base rate, Brier 0.234): model **+23.2%**, market **+34.4%** — both beat chance, the market by more.
 
 ## Betting ledger (paper, honest)
 > A paper-traded book — no real money — kept to test honestly whether any model-vs-market edge is actually real. So far: no.

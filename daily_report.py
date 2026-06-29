@@ -247,6 +247,31 @@ def title_tracker():
     return _png(fig)
 
 
+def reliability_chart(cal):
+    """Reliability diagram: forecast probability vs realized frequency, with the
+    perfect-calibration diagonal and binomial 95% bands (the sampling uncertainty
+    implied by each bucket's game count). Marker area scales with bucket size."""
+    if cal is None or len(cal) == 0:
+        return None
+    f = cal["forecast"].to_numpy(float)
+    r = cal["realized"].to_numpy(float)
+    n = cal["n"].to_numpy(float)
+    se = np.sqrt(np.clip(r * (1 - r), 0, None) / np.maximum(n, 1))
+    fig, ax = plt.subplots(figsize=(5.6, 5.6))
+    ax.plot([0, 1], [0, 1], "--", color="#5b6b86", lw=1, label="perfect calibration")
+    ax.errorbar(f, r, yerr=1.96 * se, fmt="none", ecolor="#5d8fd1",
+                elinewidth=1.2, capsize=3, alpha=.7, zorder=3)
+    ax.scatter(f, r, s=24 + 16 * np.sqrt(n), color="#5d8fd1",
+               edgecolors="#0a1020", linewidths=.6, zorder=4)
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    ax.set_xlabel("Model forecast probability")
+    ax.set_ylabel("Observed frequency")
+    ax.legend(fontsize=8, frameon=False, labelcolor="#c9d4e3", loc="upper left")
+    ax.grid(alpha=.25)
+    ax.set_aspect("equal", "box")
+    return _png(fig)
+
+
 def _market_snapshot(market, which="last"):
     pm = _read("data/polymarket_history.csv")
     if pm is None:
@@ -309,7 +334,9 @@ def market_efficiency():
     y = {t: (1.0 if t in advancers else 0.0) for t in teams}
     mb = np.mean([(model0[t] - y[t]) ** 2 for t in teams])
     kb = np.mean([(mk[t] - y[t]) ** 2 for t in teams])
-    return {"model": float(mb), "market": float(kb), "n": len(teams)}
+    base = float(np.mean(list(y.values())))  # climatology: predict the base rate
+    return {"model": float(mb), "market": float(kb), "n": len(teams),
+            "base_brier": base * (1 - base)}
 
 
 def knockout_board():
@@ -387,7 +414,7 @@ def _cards(lb, skill, bet):
     return [f'<div class="cards">{"".join(c)}</div>', ""] if c else []
 
 
-def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, bet):
+def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, rel, adv, mvm, eff, bet):
     L = [f"# 🏆 World Cup 2026 — Model Report · {date}", "",
          "*A fully-automated quant forecasting system: it rates every national team, "
          "runs 50,000 Monte-Carlo simulations of the tournament every day, prices every "
@@ -398,7 +425,9 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
     if lb is not None:
         L += ["## Championship leaderboard",
               "> Each team's simulated chance of reaching each knockout round and lifting "
-              "the trophy, from 50,000 tournament simulations. Darker cells = more likely.",
+              "the trophy, from 50,000 tournament simulations. Darker cells = more likely. "
+              "Each probability carries a Monte-Carlo 95% margin of ≤ ±0.4 pp from the "
+              "50,000 draws.",
               "",
               "| Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |",
               "|---|---|--:|--:|--:|--:|--:|--:|"]
@@ -446,9 +475,12 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
               f"| Hit rate (avg P of actual) | **{s['avg_p_actual']:.1%}** | 33.3% |", ""]
     if cal is not None:
         L += ["### Calibration check",
-              "> When the model says X%, does it happen about X% of the time? Forecast "
-              "vs reality, bucketed.", "",
-              "| Forecast bucket | n | Model said | Actually happened |", "|---|--:|--:|--:|"]
+              "> When the model says X%, does it happen about X% of the time? Points on "
+              "the diagonal are perfectly calibrated; the bars are 95% bands implied by "
+              "each bucket's sample size, and bigger dots hold more games.", ""]
+        if rel:
+            L += [rel, ""]
+        L += ["| Forecast bucket | n | Model said | Actually happened |", "|---|--:|--:|--:|"]
         for r in cal.itertuples(index=False):
             L.append(f"| {r.bucket} | {int(r.n)} | {r.forecast:.1%} | {r.realized:.1%} |")
         L.append("")
@@ -477,6 +509,13 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
                   f"Polymarket **{eff['market']:.3f}** — {verdict}, consistent with the "
                   f"project's honest finding that the model is well-calibrated but not "
                   f"sharper than the market.", ""]
+            if eff.get("base_brier"):
+                bss_m = 1 - eff["model"] / eff["base_brier"]
+                bss_k = 1 - eff["market"] / eff["base_brier"]
+                L += [f"> Brier skill score versus a no-skill climatology forecast "
+                      f"(always predict the base rate, Brier {eff['base_brier']:.3f}): "
+                      f"model **{bss_m:+.1%}**, market **{bss_k:+.1%}** — both beat "
+                      f"chance, the market by more.", ""]
     if bet is not None:
         b = bet
         sign = "+" if b["profit"] >= 0 else ""
@@ -725,7 +764,8 @@ def main():
     kb = _try(knockout_board)
     mvm = _try(market_vs_model)
     eff = _try(market_efficiency)
-    md = build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, bet)
+    rel = _try(lambda: reliability_chart(cal))
+    md = build_markdown(date, lb, tracker, kb, day, fx, skill, cal, rel, adv, mvm, eff, bet)
     page = md_to_html(md, date)
     # HTML stays self-contained (base64 charts inlined); the .md view drops the
     # data URIs so the markdown file stays small and diff-friendly.
