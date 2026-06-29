@@ -33,18 +33,20 @@ matplotlib.use("Agg")  # headless: safe under cron / GitHub Actions
 import matplotlib.pyplot as plt
 from cycler import cycler
 
-# Chart styling matched to the report's design system (navy palette, despined).
+# Charts are themed dark + transparent so they sit on the report's glass panels.
 plt.rcParams.update({
     "font.family": "sans-serif", "font.size": 10.5,
-    "figure.facecolor": "white", "axes.facecolor": "white",
-    "axes.edgecolor": "#c8cedb", "axes.linewidth": .8,
+    "figure.facecolor": "none", "axes.facecolor": "none", "savefig.facecolor": "none",
+    "text.color": "#c9d4e3", "axes.labelcolor": "#9fb0c6",
+    "xtick.color": "#7e8ca3", "ytick.color": "#7e8ca3",
+    "axes.edgecolor": "#33415c", "axes.linewidth": .8,
     "axes.spines.top": False, "axes.spines.right": False,
-    "axes.grid": True, "grid.color": "#e9ecf3", "grid.linewidth": .9,
-    "axes.titlesize": 12.5, "axes.titleweight": "bold", "axes.titlecolor": "#0a3d62",
+    "axes.grid": True, "grid.color": "#ffffff16", "grid.linewidth": .8,
+    "axes.titlesize": 12.5, "axes.titleweight": "bold", "axes.titlecolor": "#e8eefb",
     "axes.titlelocation": "left", "axes.titlepad": 10,
-    "axes.labelcolor": "#5b6677", "xtick.color": "#5b6677", "ytick.color": "#5b6677",
-    "axes.prop_cycle": cycler(color=["#0a3d62", "#e58e26", "#1e9b6b", "#c0392b",
-                                     "#6c5ce7", "#0a6cb3", "#d6336c", "#16a085"]),
+    "legend.frameon": False, "legend.labelcolor": "#c9d4e3",
+    "axes.prop_cycle": cycler(color=["#38bdf8", "#f59e0b", "#34d399", "#f472b6",
+                                     "#a78bfa", "#60a5fa", "#fb7185", "#2dd4bf"]),
 })
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -204,7 +206,7 @@ def betting_ledger():
 def _png(fig):
     """Render a matplotlib figure to a self-contained inline base64 <img>."""
     buf = io.BytesIO()
-    fig.savefig(buf, format="png", dpi=110, bbox_inches="tight")
+    fig.savefig(buf, format="png", dpi=130, bbox_inches="tight", transparent=True)
     plt.close(fig)
     b64 = base64.b64encode(buf.getvalue()).decode("ascii")
     return f"<img alt='chart' style='max-width:100%;margin:10px 0' src='data:image/png;base64,{b64}'>"
@@ -239,8 +241,7 @@ def title_tracker():
     for t in top:
         ax.plot(pd.to_datetime(piv.index), piv[t] * 100, marker="o", ms=3, lw=1.8, label=t)
     ax.set_ylabel("Championship probability (%)")
-    ax.set_title("Title odds over the tournament (top 8)")
-    ax.legend(fontsize=8, ncol=2, frameon=False)
+    ax.legend(fontsize=8, ncol=2, frameon=False, labelcolor="#c9d4e3")
     ax.grid(alpha=.25)
     fig.autofmt_xdate()
     return _png(fig)
@@ -273,15 +274,14 @@ def market_vs_model():
     fig, ax = plt.subplots(figsize=(6.2, 6))
     xs = [model[t] * 100 for t in teams]
     ys = [mkt[t] * 100 for t in teams]
-    ax.scatter(xs, ys, s=20, alpha=.7, color="#0a3d62")
+    ax.scatter(xs, ys, s=34, alpha=.85, color="#38bdf8", edgecolors="#0a1020", linewidths=.6)
     lim = max(xs + ys + [1]) * 1.1
-    ax.plot([0, lim], [0, lim], "--", color="#999", lw=1)
+    ax.plot([0, lim], [0, lim], "--", color="#5b6b86", lw=1)
     for t, mo, ma, _ in rows[:6]:
         ax.annotate(t, (mo * 100, ma * 100), fontsize=7.5,
                     xytext=(3, 3), textcoords="offset points")
     ax.set_xlabel("Model champion %")
     ax.set_ylabel("Polymarket implied % (overround stripped)")
-    ax.set_title("Model vs market — championship")
     ax.grid(alpha=.25)
     return _png(fig), rows
 
@@ -357,22 +357,28 @@ def _fmt_pct(x):
     return f"{x:.1%}" if pd.notna(x) else "—"
 
 
+def _ticker(num, dec=0, suffix="", prefix=""):
+    """Count-up animated number (driven by the page's JS)."""
+    return (f'<span class="ticker" data-to="{num}" data-dec="{dec}" '
+            f'data-suffix="{suffix}" data-prefix="{prefix}">{prefix}{num:.{dec}f}{suffix}</span>')
+
+
 def _cards(lb, skill, bet):
-    """An 'at a glance' summary band (raw HTML — passes through the renderer)."""
-    def card(k, v, s):
+    """An 'at a glance' bento band (raw HTML — passes through the renderer)."""
+    def card(k, v_html, s):
         return (f'<div class="card"><div class="k">{html.escape(k)}</div>'
-                f'<div class="v">{html.escape(v)}</div>'
+                f'<div class="v">{v_html}</div>'
                 f'<div class="s">{html.escape(s)}</div></div>')
     c = []
     if lb is not None and len(lb):
         t = lb.iloc[0]
-        c.append(card("Current favourite", str(t["team"]),
+        c.append(card("Current favourite", html.escape(str(t["team"])),
                       f"{t['reach_champion']:.1%} chance to win the cup"))
     if skill:
         better = (skill["rps_base"] - skill["rps"]) / skill["rps_base"] * 100
-        c.append(card("Forecast accuracy", f"{skill['rps']:.3f}",
+        c.append(card("Forecast accuracy", _ticker(skill["rps"], 3),
                       f"RPS — {better:.0f}% better than guessing ({skill['n']} games)"))
-        c.append(card("Hit rate", f"{skill['avg_p_actual']:.0%}",
+        c.append(card("Hit rate", _ticker(skill["avg_p_actual"] * 100, 0, "%"),
                       "avg confidence in the result that actually happened"))
     if bet:
         sign = "+" if bet["profit"] >= 0 else "−"
@@ -496,56 +502,117 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
 
 
 CSS = """
-:root{--navy:#0a3d62;--ink:#1b2433;--muted:#5b6677;--line:#e6e8ef;--bg:#f4f6fb;
-  --card:#fff;--accent:#0a6cb3}
+:root{--bg:#0a0e1a;--ink:#e8eefb;--muted:#9fb0c6;--faint:#6b7a93;
+  --line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.15);
+  --panel:rgba(20,28,46,.55);--accent:#38bdf8;
+  --grad:linear-gradient(100deg,#38bdf8,#a78bfa 55%,#f472b6)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font:16px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;margin:0;
-  color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
-.topbar{position:sticky;top:0;z-index:20;display:flex;gap:14px;align-items:center;
-  padding:10px 18px;background:rgba(10,61,98,.97);color:#fff;overflow-x:auto;
-  box-shadow:0 1px 10px rgba(0,0,0,.14);scrollbar-width:none}
+body{margin:0;font:16px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.aurora{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(42% 50% at 14% 8%,rgba(56,189,248,.18),transparent 60%),
+  radial-gradient(46% 56% at 86% 4%,rgba(167,139,250,.18),transparent 60%),
+  radial-gradient(50% 60% at 62% 102%,rgba(52,211,153,.12),transparent 60%),var(--bg);
+  animation:hue 24s ease-in-out infinite alternate}
+.grid{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px;
+  -webkit-mask:radial-gradient(circle at 50% 0,#000 28%,transparent 78%);
+  mask:radial-gradient(circle at 50% 0,#000 28%,transparent 78%)}
+@keyframes hue{to{filter:hue-rotate(26deg)}}
+.topbar{position:sticky;top:0;z-index:30;display:flex;gap:14px;align-items:center;
+  padding:11px 20px;background:rgba(10,14,26,.7);backdrop-filter:blur(16px) saturate(1.4);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:none}
 .topbar::-webkit-scrollbar{display:none}
-.topbar .brand{font-weight:700;white-space:nowrap;font-size:15px}
-.topbar nav{display:flex;gap:4px}
-.topbar a{color:#cfe3f3;text-decoration:none;font-size:13px;white-space:nowrap;
-  padding:5px 10px;border-radius:99px}
-.topbar a:hover,.topbar a:focus{background:rgba(255,255,255,.16);color:#fff;outline:none}
-main{max-width:900px;margin:0 auto;padding:6px 18px 64px}
-.datebadge{display:inline-block;margin:22px 0 0;background:#e7eff7;color:var(--navy);
-  font-weight:600;font-size:12px;padding:4px 11px;border-radius:99px;letter-spacing:.3px}
-h1{font-size:clamp(25px,5.5vw,34px);letter-spacing:-.6px;margin:8px 0 2px;line-height:1.15}
-h2{font-size:clamp(19px,3.6vw,24px);color:var(--navy);margin:42px 0 0;padding-top:14px;
-  border-top:1px solid var(--line);scroll-margin-top:60px}
-h3{font-size:17px;color:#2c5f86;margin:22px 0 0;scroll-margin-top:60px}
-p{margin:11px 0}.li{margin:5px 0}
-.sub{color:var(--muted);font-size:14.5px;margin:6px 0 4px;max-width:64ch}
+.topbar .brand{font-weight:700;font-size:15px;white-space:nowrap;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.topbar nav{display:flex;gap:3px}
+.topbar a{color:var(--muted);text-decoration:none;font-size:13px;white-space:nowrap;
+  padding:5px 11px;border-radius:99px;transition:.2s}
+.topbar a:hover,.topbar a:focus{color:var(--ink);background:rgba(255,255,255,.07);outline:none}
+.topbar a.active{color:var(--ink);background:rgba(56,189,248,.16);
+  box-shadow:inset 0 0 0 1px rgba(56,189,248,.32)}
+main{max-width:960px;margin:0 auto;padding:8px 20px 80px}
+.datebadge{display:inline-flex;align-items:center;gap:6px;margin:28px 0 0;
+  background:rgba(56,189,248,.1);color:var(--accent);font-weight:600;font-size:12px;
+  padding:5px 12px;border-radius:99px;border:1px solid rgba(56,189,248,.24);letter-spacing:.3px}
+h1{font-size:clamp(30px,6.5vw,50px);line-height:1.06;letter-spacing:-1.2px;margin:16px 0 4px;
+  font-weight:800;background:linear-gradient(180deg,#fff,#aab9d4);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:clamp(21px,3.8vw,28px);font-weight:700;letter-spacing:-.5px;color:var(--ink);
+  margin:58px 0 0;padding-top:24px;border-top:1px solid var(--line);scroll-margin-top:66px}
+h3{font-size:18px;color:#cdd9ec;margin:26px 0 0;scroll-margin-top:66px}
+p{margin:11px 0}.li{margin:5px 0;color:#cdd9ec}
+.sub{color:var(--muted);font-size:14.5px;margin:8px 0 6px;max-width:66ch}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-abbr{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}
-strong{color:var(--navy)}
-.lede{margin:16px 0;padding:16px 18px;background:var(--card);border:1px solid var(--line);
-  border-left:4px solid var(--navy);border-radius:12px;font-size:15px;color:#33405a;
-  box-shadow:0 1px 4px rgba(10,61,98,.06)}
+abbr{text-decoration:underline dotted rgba(56,189,248,.65);text-underline-offset:3px;cursor:help}
+strong{color:#fff;font-weight:650}
+.lede{position:relative;margin:20px 0;padding:18px 22px;border-radius:16px;background:var(--panel);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);
+  font-size:15px;color:#d7e0f0;overflow:hidden}
+.lede::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grad)}
 .lede a{font-weight:600}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
-  box-shadow:0 1px 4px rgba(10,61,98,.05)}
-.card .k{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
-.card .v{font-size:25px;font-weight:700;color:var(--navy);margin:4px 0;line-height:1.1}
-.card .s{font-size:12.5px;color:var(--muted);line-height:1.4}
-.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0;border:1px solid var(--line);
-  border-radius:14px;box-shadow:0 1px 4px rgba(10,61,98,.05)}
-table{border-collapse:collapse;width:100%;font-size:14px;background:var(--card)}
-th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:24px 0}
+.card{position:relative;padding:18px 20px;border-radius:18px;background:var(--panel);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);
+  overflow:hidden;transition:transform .25s,border-color .25s}
+.card:hover{transform:translateY(-3px);border-color:var(--line2)}
+.card::after{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;
+  background:radial-gradient(130px 130px at var(--mx,50%) var(--my,-20%),rgba(56,189,248,.6),transparent 62%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
+.card:hover::after{opacity:1}
+.card .k{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--faint)}
+.card .v{font-size:clamp(26px,4vw,32px);font-weight:800;letter-spacing:-.6px;margin:7px 0 5px;
+  line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card .s{font-size:12.5px;color:var(--muted);line-height:1.45}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:16px 0;border-radius:16px;
+  border:1px solid var(--line);background:var(--panel);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:10px 13px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
-thead th{background:var(--navy);color:#fff;border:none;font-weight:600}
+thead th{background:rgba(255,255,255,.045);color:#cdd9ec;font-weight:600;border-bottom:1px solid var(--line2)}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:rgba(56,189,248,.07)}
 tbody tr:last-child td{border-bottom:none}
-tbody tr:hover{background:#eef4fa}
-img{max-width:100%;height:auto;display:block;margin:14px 0;border:1px solid var(--line);
-  border-radius:14px;background:#fff;padding:6px}
-hr{border:none;border-top:1px solid var(--line);margin:36px 0 14px}
-footer{color:var(--muted);font-size:12.5px;max-width:66ch;line-height:1.5}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+img{max-width:100%;height:auto;display:block;margin:16px 0;border-radius:16px;
+  border:1px solid var(--line);background:rgba(13,19,34,.45);padding:12px}
+hr{border:none;border-top:1px solid var(--line);margin:42px 0 16px}
+footer{color:var(--faint);font-size:12.5px;max-width:68ch;line-height:1.5}
+.js .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.js .reveal.in{opacity:1;transform:none}
+@media print{.reveal{opacity:1!important;transform:none!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}html{scroll-behavior:auto}
+  .js .reveal{opacity:1;transform:none;transition:none}}
+"""
+
+JS = """
+if(!('IntersectionObserver' in window)){
+  document.querySelectorAll('.reveal').forEach(e=>e.classList.add('in'));}
+const ease=t=>1-Math.pow(1-t,3);
+function tick(el){const to=parseFloat(el.dataset.to),dec=+(el.dataset.dec||0),
+  suf=el.dataset.suffix||'',pre=el.dataset.prefix||'',t0=performance.now();
+  function f(t){const p=Math.min(1,(t-t0)/900);
+    el.textContent=pre+(to*ease(p)).toFixed(dec)+suf;if(p<1)requestAnimationFrame(f)}
+  requestAnimationFrame(f)}
+const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){
+  e.target.classList.add('in');
+  e.target.querySelectorAll('.ticker[data-to]').forEach(k=>{if(!k._d){k._d=1;tick(k)}});
+  io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('main>h1,main>h2,main>h3,main>.cards,main>.tw,main>img,main>.lede,main>p')
+  .forEach(el=>{el.classList.add('reveal');io.observe(el)});
+const links=[...document.querySelectorAll('.topbar a')],map={};
+links.forEach(a=>map[a.getAttribute('href').slice(1)]=a);
+const so=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){
+  links.forEach(l=>l.classList.remove('active'));map[e.target.id]&&map[e.target.id].classList.add('active')}}),
+  {rootMargin:'-18% 0px -72% 0px'});
+document.querySelectorAll('main h2[id]').forEach(h=>so.observe(h));
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('mousemove',e=>{
+  const r=c.getBoundingClientRect();
+  c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')}));
 """
 
 
@@ -567,10 +634,9 @@ def md_to_html(md, date):
             return f"<th>{inline(c)}</th>"
         style = ""
         m = re.fullmatch(r"\*{0,2}(\d{1,3}(?:\.\d+)?)%\*{0,2}", c.strip())
-        if m:  # shade single-percentage cells: darker = more likely
+        if m:  # heat-shade single-percentage cells: brighter glow = more likely
             v = min(float(m.group(1)), 100) / 100
-            style = (f' style="background:rgba(10,61,98,{0.06 + 0.46 * v:.2f})'
-                     + (';color:#fff"' if v > 0.62 else '"'))
+            style = f' style="background:rgba(56,189,248,{0.04 + 0.34 * v:.2f})"'
         return f"<td{style}>{inline(c)}</td>"
 
     def slug(t):
@@ -630,12 +696,15 @@ def md_to_html(md, date):
             f'<meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<meta name="description" content="Automated 2026 World Cup forecasting '
             f'model — a live, self-grading report.">'
-            f'<title>WC2026 Model Report · {date}</title><style>{CSS}</style>')
+            f'<title>WC2026 Model Report · {date}</title><style>{CSS}</style>'
+            f'<script>document.documentElement.classList.add("js")</script>')
     return (f'<!doctype html><html lang="en"><head>{head}</head><body>'
+            f'<div class="aurora" aria-hidden="true"></div>'
+            f'<div class="grid" aria-hidden="true"></div>'
             f'<header class="topbar"><span class="brand">⚽ WC2026 Model</span>'
             f'<nav>{nav}</nav></header><main>'
             f'<span class="datebadge">🔄 Auto-updated twice daily · {date}</span>'
-            + "\n".join(body) + "</main></body></html>")
+            + "\n".join(body) + f"</main><script>{JS}</script></body></html>")
 
 
 def _try(fn):
