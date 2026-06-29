@@ -45,8 +45,8 @@ plt.rcParams.update({
     "axes.titlesize": 12.5, "axes.titleweight": "bold", "axes.titlecolor": "#e8eefb",
     "axes.titlelocation": "left", "axes.titlepad": 10,
     "legend.frameon": False, "legend.labelcolor": "#c9d4e3",
-    "axes.prop_cycle": cycler(color=["#38bdf8", "#f59e0b", "#34d399", "#f472b6",
-                                     "#a78bfa", "#60a5fa", "#fb7185", "#2dd4bf"]),
+    "axes.prop_cycle": cycler(color=["#5d8fd1", "#d6a25c", "#69b29a", "#c47f8c",
+                                     "#8a86c0", "#7faad8", "#a8788f", "#5fa9ad"]),
 })
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -274,7 +274,7 @@ def market_vs_model():
     fig, ax = plt.subplots(figsize=(6.2, 6))
     xs = [model[t] * 100 for t in teams]
     ys = [mkt[t] * 100 for t in teams]
-    ax.scatter(xs, ys, s=34, alpha=.85, color="#38bdf8", edgecolors="#0a1020", linewidths=.6)
+    ax.scatter(xs, ys, s=34, alpha=.85, color="#5d8fd1", edgecolors="#0a1020", linewidths=.6)
     lim = max(xs + ys + [1]) * 1.1
     ax.plot([0, lim], [0, lim], "--", color="#5b6b86", lw=1)
     for t, mo, ma, _ in rows[:6]:
@@ -502,27 +502,25 @@ def build_markdown(date, lb, tracker, kb, day, fx, skill, cal, adv, mvm, eff, be
 
 
 CSS = """
-:root{--bg:#0a0e1a;--ink:#e8eefb;--muted:#9fb0c6;--faint:#6b7a93;
-  --line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.15);
-  --panel:rgba(20,28,46,.55);--accent:#38bdf8;
-  --grad:linear-gradient(100deg,#38bdf8,#a78bfa 55%,#f472b6)}
+:root{--bg:#0a0d13;--ink:#e7ecf3;--muted:#97a4b6;--faint:#67738a;
+  --line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.14);
+  --panel:rgba(18,24,38,.55);--accent:#5d8fd1;
+  --grad:linear-gradient(100deg,#9cbceb,#5d8fd1)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font:16px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .aurora{position:fixed;inset:0;z-index:-2;background:
-  radial-gradient(42% 50% at 14% 8%,rgba(56,189,248,.18),transparent 60%),
-  radial-gradient(46% 56% at 86% 4%,rgba(167,139,250,.18),transparent 60%),
-  radial-gradient(50% 60% at 62% 102%,rgba(52,211,153,.12),transparent 60%),var(--bg);
-  animation:hue 24s ease-in-out infinite alternate}
+  radial-gradient(45% 55% at 12% 6%,rgba(93,143,209,.13),transparent 62%),
+  radial-gradient(48% 58% at 88% 2%,rgba(120,150,200,.08),transparent 62%),
+  radial-gradient(55% 65% at 60% 104%,rgba(80,118,176,.07),transparent 62%),var(--bg)}
 .grid{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;
   background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
     linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px;
   -webkit-mask:radial-gradient(circle at 50% 0,#000 28%,transparent 78%);
   mask:radial-gradient(circle at 50% 0,#000 28%,transparent 78%)}
-@keyframes hue{to{filter:hue-rotate(26deg)}}
 .topbar{position:sticky;top:0;z-index:30;display:flex;gap:14px;align-items:center;
-  padding:11px 20px;background:rgba(10,14,26,.7);backdrop-filter:blur(16px) saturate(1.4);
+  padding:11px 20px;background:rgba(10,13,19,.72);backdrop-filter:blur(16px) saturate(1.3);
   -webkit-backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--line);
   overflow-x:auto;scrollbar-width:none}
 .topbar::-webkit-scrollbar{display:none}
@@ -532,12 +530,12 @@ body{margin:0;font:16px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif
 .topbar a{color:var(--muted);text-decoration:none;font-size:13px;white-space:nowrap;
   padding:5px 11px;border-radius:99px;transition:.2s}
 .topbar a:hover,.topbar a:focus{color:var(--ink);background:rgba(255,255,255,.07);outline:none}
-.topbar a.active{color:var(--ink);background:rgba(56,189,248,.16);
-  box-shadow:inset 0 0 0 1px rgba(56,189,248,.32)}
+.topbar a.active{color:var(--ink);background:rgba(93,143,209,.16);
+  box-shadow:inset 0 0 0 1px rgba(93,143,209,.32)}
 main{max-width:960px;margin:0 auto;padding:8px 20px 80px}
 .datebadge{display:inline-flex;align-items:center;gap:6px;margin:28px 0 0;
-  background:rgba(56,189,248,.1);color:var(--accent);font-weight:600;font-size:12px;
-  padding:5px 12px;border-radius:99px;border:1px solid rgba(56,189,248,.24);letter-spacing:.3px}
+  background:rgba(93,143,209,.1);color:var(--accent);font-weight:600;font-size:12px;
+  padding:5px 12px;border-radius:99px;border:1px solid rgba(93,143,209,.24);letter-spacing:.3px}
 h1{font-size:clamp(30px,6.5vw,50px);line-height:1.06;letter-spacing:-1.2px;margin:16px 0 4px;
   font-weight:800;background:linear-gradient(180deg,#fff,#aab9d4);
   -webkit-background-clip:text;background-clip:text;color:transparent}
@@ -547,7 +545,7 @@ h3{font-size:18px;color:#cdd9ec;margin:26px 0 0;scroll-margin-top:66px}
 p{margin:11px 0}.li{margin:5px 0;color:#cdd9ec}
 .sub{color:var(--muted);font-size:14.5px;margin:8px 0 6px;max-width:66ch}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-abbr{text-decoration:underline dotted rgba(56,189,248,.65);text-underline-offset:3px;cursor:help}
+abbr{text-decoration:underline dotted rgba(93,143,209,.65);text-underline-offset:3px;cursor:help}
 strong{color:#fff;font-weight:650}
 .lede{position:relative;margin:20px 0;padding:18px 22px;border-radius:16px;background:var(--panel);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);
@@ -560,7 +558,7 @@ strong{color:#fff;font-weight:650}
   overflow:hidden;transition:transform .25s,border-color .25s}
 .card:hover{transform:translateY(-3px);border-color:var(--line2)}
 .card::after{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;
-  background:radial-gradient(130px 130px at var(--mx,50%) var(--my,-20%),rgba(56,189,248,.6),transparent 62%);
+  background:radial-gradient(130px 130px at var(--mx,50%) var(--my,-20%),rgba(93,143,209,.6),transparent 62%);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
 .card:hover::after{opacity:1}
@@ -576,7 +574,7 @@ th,td{padding:10px 13px;border-bottom:1px solid var(--line);text-align:right;whi
 th:first-child,td:first-child{text-align:left}
 thead th{background:rgba(255,255,255,.045);color:#cdd9ec;font-weight:600;border-bottom:1px solid var(--line2)}
 tbody tr{transition:background .15s}
-tbody tr:hover{background:rgba(56,189,248,.07)}
+tbody tr:hover{background:rgba(93,143,209,.07)}
 tbody tr:last-child td{border-bottom:none}
 img{max-width:100%;height:auto;display:block;margin:16px 0;border-radius:16px;
   border:1px solid var(--line);background:rgba(13,19,34,.45);padding:12px}
@@ -636,7 +634,7 @@ def md_to_html(md, date):
         m = re.fullmatch(r"\*{0,2}(\d{1,3}(?:\.\d+)?)%\*{0,2}", c.strip())
         if m:  # heat-shade single-percentage cells: brighter glow = more likely
             v = min(float(m.group(1)), 100) / 100
-            style = f' style="background:rgba(56,189,248,{0.04 + 0.34 * v:.2f})"'
+            style = f' style="background:rgba(93,143,209,{0.04 + 0.34 * v:.2f})"'
         return f"<td{style}>{inline(c)}</td>"
 
     def slug(t):
