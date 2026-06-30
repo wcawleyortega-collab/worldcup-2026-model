@@ -2,25 +2,25 @@
 
 *A fully-automated quant forecasting system: it rates every national team, runs 50,000 Monte-Carlo simulations of the tournament every day, prices every match, and grades its own forecasts against reality — no human in the loop. The honest headline finding: it is well-calibrated but not sharper than the betting market. Full write-up in PORTFOLIO.md.*
 
-<div class="cards"><div class="card"><div class="k">Current favourite</div><div class="v">France</div><div class="s">16.6% chance to win the cup</div></div><div class="card"><div class="k">Forecast accuracy</div><div class="v"><span class="ticker" data-to="0.16676064020833334" data-dec="3" data-suffix="" data-prefix="">0.167</span></div><div class="s">RPS — 25% better than guessing (72 games)</div></div><div class="card"><div class="k">Hit rate</div><div class="v"><span class="ticker" data-to="45.038611111111116" data-dec="0" data-suffix="%" data-prefix="">45%</span></div><div class="s">avg confidence in the result that actually happened</div></div><div class="card"><div class="k">Paper betting</div><div class="v">2W–2L</div><div class="s">net −€90 · tracked honestly, no real money</div></div></div>
+<div class="cards"><div class="card"><div class="k">Current favourite</div><div class="v">France</div><div class="s">20.1% chance to win the cup</div></div><div class="card"><div class="k">Forecast accuracy</div><div class="v"><span class="ticker" data-to="0.16676064020833334" data-dec="3" data-suffix="" data-prefix="">0.167</span></div><div class="s">RPS — 25% better than guessing (72 games)</div></div><div class="card"><div class="k">Hit rate</div><div class="v"><span class="ticker" data-to="45.038611111111116" data-dec="0" data-suffix="%" data-prefix="">45%</span></div><div class="s">avg confidence in the result that actually happened</div></div><div class="card"><div class="k">Paper betting</div><div class="v">2W–2L</div><div class="s">net −€90 · tracked honestly, no real money</div></div></div>
 
 ## Championship leaderboard
 > Each team's simulated chance of reaching each knockout round and lifting the trophy, from 50,000 tournament simulations. Darker cells = more likely. Each probability carries a Monte-Carlo 95% margin of ≤ ±0.4 pp from the 50,000 draws.
 
 | Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |
 |---|---|--:|--:|--:|--:|--:|--:|
-| France | I | 2187 | 78.7% | 56.2% | 40.2% | 26.2% | **16.6%** |
-| Argentina | J | 2134 | 88.2% | 71.5% | 50.1% | 29.2% | **15.9%** |
-| Spain | H | 2149 | 76.8% | 47.2% | 32.8% | 18.6% | **11.2%** |
-| England | L | 2131 | 80.8% | 53.6% | 32.7% | 19.7% | **10.7%** |
-| Brazil | C | 2113 | 65.4% | 41.4% | 23.1% | 13.5% | **7.0%** |
-| Portugal | K | 2099 | 65.3% | 32.8% | 20.6% | 10.5% | **5.5%** |
-| Netherlands | F | 2075 | 55.4% | 36.9% | 16.8% | 8.8% | **4.4%** |
-| Germany | E | 2062 | 71.3% | 29.0% | 16.4% | 8.2% | **3.9%** |
-| Colombia | K | 2019 | 64.8% | 37.2% | 16.9% | 7.5% | **3.1%** |
-| United States | D | 1934 | 70.8% | 38.5% | 16.0% | 6.7% | **2.9%** |
-| Norway | I | 2027 | 57.4% | 26.3% | 12.0% | 5.7% | **2.4%** |
-| Mexico | A | 1928 | 57.4% | 24.5% | 11.6% | 5.5% | **2.2%** |
+| France | I | 2187 | 78.5% | 67.7% | 50.2% | 32.4% | **20.1%** |
+| Argentina | J | 2134 | 88.2% | 71.6% | 50.0% | 27.9% | **15.2%** |
+| Brazil | C | 2129 | 100.0% | 65.9% | 38.6% | 23.3% | **12.6%** |
+| Spain | H | 2149 | 76.9% | 46.6% | 32.6% | 19.1% | **11.1%** |
+| England | L | 2131 | 80.7% | 53.8% | 29.9% | 17.8% | **9.6%** |
+| Portugal | K | 2099 | 65.8% | 33.6% | 21.2% | 11.2% | **5.8%** |
+| Morocco | C | 2028 | 100.0% | 60.7% | 25.0% | 11.3% | **4.9%** |
+| United States | D | 1934 | 70.3% | 38.4% | 16.0% | 7.0% | **3.0%** |
+| Colombia | K | 2019 | 64.9% | 37.1% | 16.7% | 7.0% | **2.7%** |
+| Mexico | A | 1928 | 57.0% | 24.4% | 10.2% | 4.8% | **2.0%** |
+| Norway | I | 2027 | 57.7% | 21.8% | 10.0% | 4.7% | **1.9%** |
+| Belgium | G | 2006 | 54.4% | 29.0% | 11.3% | 4.6% | **1.9%** |
 
 ## Title odds over time
 > How each contender's championship chance has moved as results came in.
@@ -32,21 +32,22 @@
 
 | Tie (advance %) | W/D/L 90′ | xG | Most likely scores | BTTS | O2.5 |
 |---|--:|--:|---|--:|--:|
-| Brazil 65% v Japan 35% | 50/27/23 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
-| Germany 71% v Paraguay 29% | 56/25/19 | 1.7–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 47% | 46% |
-| Netherlands 55% v Morocco 45% | 41/28/31 | 1.3–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
-| Ivory Coast 43% v Norway 57% | 30/28/42 | 1.1–1.4 | 1–1 (13%), 0–1 (11%), 0–0 (9%) | 50% | 44% |
-| France 79% v Sweden 21% | 64/23/14 | 1.9–0.7 | 1–0 (13%), 2–0 (13%), 1–1 (11%) | 45% | 49% |
+| Brazil 100% v Japan 0% | 54/26/20 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 48% | 46% |
+| Germany 0% v Paraguay 100% | 54/26/20 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 48% | 46% |
+| Netherlands 0% v Morocco 100% | 40/28/31 | 1.3–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
+| Ivory Coast 42% v Norway 58% | 30/28/42 | 1.1–1.4 | 1–1 (13%), 0–1 (11%), 0–0 (9%) | 50% | 44% |
+| France 78% v Sweden 22% | 64/23/14 | 1.9–0.7 | 1–0 (13%), 2–0 (13%), 1–1 (11%) | 45% | 49% |
 | Mexico (H) 57% v Ecuador 43% | 42/28/29 | 1.4–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
 | England 81% v DR Congo 19% | 66/22/12 | 1.9–0.7 | 2–0 (13%), 1–0 (13%), 1–1 (10%) | 44% | 49% |
-| Belgium 55% v Senegal 45% | 39/28/32 | 1.3–1.1 | 1–1 (14%), 1–0 (11%), 0–1 (9%) | 50% | 44% |
-| United States (H) 71% v Bosnia and Herzegovina 29% | 55/26/19 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 47% | 46% |
+| Belgium 54% v Senegal 46% | 39/29/32 | 1.3–1.1 | 1–1 (14%), 1–0 (11%), 0–1 (9%) | 50% | 44% |
+| United States (H) 70% v Bosnia and Herzegovina 30% | 55/26/19 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 47% | 46% |
 | Spain 77% v Austria 23% | 62/23/15 | 1.8–0.8 | 1–0 (13%), 2–0 (12%), 1–1 (11%) | 45% | 48% |
-| Portugal 65% v Croatia 35% | 50/27/23 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
+| Portugal 66% v Croatia 34% | 50/27/23 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
 | Switzerland 58% v Algeria 42% | 43/28/29 | 1.4–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
 | Australia 46% v Egypt 54% | 33/29/39 | 1.2–1.3 | 1–1 (14%), 0–1 (11%), 1–0 (9%) | 50% | 44% |
 | Argentina 88% v Cape Verde 12% | 76/17/7 | 2.3–0.6 | 2–0 (15%), 1–0 (13%), 3–0 (11%) | 40% | 55% |
 | Colombia 65% v Ghana 35% | 49/27/24 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
+| Canada (H) 100% v Morocco 100% | 27/28/45 | 1.0–1.4 | 1–1 (13%), 0–1 (12%), 0–0 (9%) | 50% | 44% |
 
 ## How accurate is it? (72 resolved games)
 > Pre-kickoff forecasts scored against reality, versus blindly guessing 33/33/33. On every metric, lower is better except hit rate.
@@ -78,18 +79,18 @@
 
 | Biggest disagreement | Model | Market | Gap |
 |---|--:|--:|--:|
-| France | 16.6% | 28.1% | -11.5 |
-| Argentina | 15.9% | 19.2% | -3.3 |
-| Morocco | 2.1% | 4.0% | -1.9 |
-| Canada | 1.2% | 0.2% | +0.9 |
-| Switzerland | 1.8% | 0.8% | +0.9 |
-| England | 10.7% | 10.0% | +0.7 |
-| Belgium | 1.9% | 1.3% | +0.5 |
-| Senegal | 1.0% | 0.4% | +0.5 |
+| France | 20.1% | 28.9% | -8.8 |
+| Brazil | 12.6% | 6.9% | +5.6 |
+| Argentina | 15.2% | 19.0% | -3.8 |
+| Morocco | 4.9% | 3.6% | +1.3 |
+| Canada | 1.3% | 0.3% | +1.0 |
+| Switzerland | 1.6% | 0.8% | +0.8 |
+| Sweden | 0.7% | 0.0% | +0.7 |
+| Belgium | 1.9% | 1.2% | +0.6 |
 
-**Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.180** vs Polymarket **0.154** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
+**Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.163** vs Polymarket **0.139** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
 
-> Brier skill score versus a no-skill climatology forecast (always predict the base rate, Brier 0.234): model **+23.2%**, market **+34.4%** — both beat chance, the market by more.
+> Brier skill score versus a no-skill climatology forecast (always predict the base rate, Brier 0.229): model **+28.8%**, market **+39.3%** — both beat chance, the market by more.
 
 ## Betting ledger (paper, honest)
 > A paper-traded book — no real money — kept to test honestly whether any model-vs-market edge is actually real. So far: no.
