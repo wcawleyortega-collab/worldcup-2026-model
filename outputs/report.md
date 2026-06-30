@@ -1,4 +1,4 @@
-# 🏆 World Cup 2026 — Model Report · 2026-06-29
+# 🏆 World Cup 2026 — Model Report · 2026-06-30
 
 *A fully-automated quant forecasting system: it rates every national team, runs 50,000 Monte-Carlo simulations of the tournament every day, prices every match, and grades its own forecasts against reality — no human in the loop. The honest headline finding: it is well-calibrated but not sharper than the betting market. Full write-up in PORTFOLIO.md.*
 
@@ -12,10 +12,10 @@
 | France | I | 2187 | 78.7% | 56.2% | 40.2% | 26.2% | **16.6%** |
 | Argentina | J | 2134 | 88.2% | 71.5% | 50.1% | 29.2% | **15.9%** |
 | Spain | H | 2149 | 76.8% | 47.2% | 32.8% | 18.6% | **11.2%** |
-| England | L | 2131 | 80.8% | 53.5% | 32.7% | 19.7% | **10.7%** |
-| Brazil | C | 2113 | 65.4% | 41.4% | 23.0% | 13.5% | **7.0%** |
+| England | L | 2131 | 80.8% | 53.6% | 32.7% | 19.7% | **10.7%** |
+| Brazil | C | 2113 | 65.4% | 41.4% | 23.1% | 13.5% | **7.0%** |
 | Portugal | K | 2099 | 65.3% | 32.8% | 20.6% | 10.5% | **5.5%** |
-| Netherlands | F | 2075 | 55.4% | 36.9% | 16.8% | 8.7% | **4.4%** |
+| Netherlands | F | 2075 | 55.4% | 36.9% | 16.8% | 8.8% | **4.4%** |
 | Germany | E | 2062 | 71.3% | 29.0% | 16.4% | 8.2% | **3.9%** |
 | Colombia | K | 2019 | 64.8% | 37.2% | 16.9% | 7.5% | **3.1%** |
 | United States | D | 1934 | 70.8% | 38.5% | 16.0% | 6.7% | **2.9%** |
@@ -78,14 +78,14 @@
 
 | Biggest disagreement | Model | Market | Gap |
 |---|--:|--:|--:|
-| France | 16.6% | 22.7% | -6.1 |
-| Argentina | 15.9% | 19.2% | -3.2 |
-| Japan | 1.1% | 0.0% | +1.0 |
-| Mexico | 2.2% | 1.2% | +1.0 |
+| France | 16.6% | 28.1% | -11.5 |
+| Argentina | 15.9% | 19.2% | -3.3 |
+| Morocco | 2.1% | 4.0% | -1.9 |
 | Canada | 1.2% | 0.2% | +0.9 |
 | Switzerland | 1.8% | 0.8% | +0.9 |
-| Morocco | 2.1% | 1.2% | +0.9 |
-| Portugal | 5.5% | 6.3% | -0.8 |
+| England | 10.7% | 10.0% | +0.7 |
+| Belgium | 1.9% | 1.3% | +0.5 |
+| Senegal | 1.0% | 0.4% | +0.5 |
 
 **Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.180** vs Polymarket **0.154** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
 
