@@ -1,26 +1,26 @@
-# 🏆 World Cup 2026 — Model Report · 2026-06-30
+# 🏆 World Cup 2026 — Model Report · 2026-07-01
 
 *A fully-automated quant forecasting system: it rates every national team, runs 50,000 Monte-Carlo simulations of the tournament every day, prices every match, and grades its own forecasts against reality — no human in the loop. The honest headline finding: it is well-calibrated but not sharper than the betting market. Full write-up in PORTFOLIO.md.*
 
-<div class="cards"><div class="card"><div class="k">Current favourite</div><div class="v">France</div><div class="s">20.1% chance to win the cup</div></div><div class="card"><div class="k">Forecast accuracy</div><div class="v"><span class="ticker" data-to="0.16676064020833334" data-dec="3" data-suffix="" data-prefix="">0.167</span></div><div class="s">RPS — 25% better than guessing (72 games)</div></div><div class="card"><div class="k">Hit rate</div><div class="v"><span class="ticker" data-to="45.038611111111116" data-dec="0" data-suffix="%" data-prefix="">45%</span></div><div class="s">avg confidence in the result that actually happened</div></div><div class="card"><div class="k">Paper betting</div><div class="v">2W–2L</div><div class="s">net −€90 · tracked honestly, no real money</div></div></div>
+<div class="cards"><div class="card"><div class="k">Current favourite</div><div class="v">France</div><div class="s">27.3% chance to win the cup</div></div><div class="card"><div class="k">Forecast accuracy</div><div class="v"><span class="ticker" data-to="0.16676064020833334" data-dec="3" data-suffix="" data-prefix="">0.167</span></div><div class="s">RPS — 25% better than guessing (72 games)</div></div><div class="card"><div class="k">Hit rate</div><div class="v"><span class="ticker" data-to="45.038611111111116" data-dec="0" data-suffix="%" data-prefix="">45%</span></div><div class="s">avg confidence in the result that actually happened</div></div><div class="card"><div class="k">Paper betting</div><div class="v">2W–2L</div><div class="s">net −€90 · tracked honestly, no real money</div></div></div>
 
 ## Championship leaderboard
 > Each team's simulated chance of reaching each knockout round and lifting the trophy, from 50,000 tournament simulations. Darker cells = more likely. Each probability carries a Monte-Carlo 95% margin of ≤ ±0.4 pp from the 50,000 draws.
 
 | Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |
 |---|---|--:|--:|--:|--:|--:|--:|
-| France | I | 2187 | 78.5% | 67.7% | 50.2% | 32.4% | **20.1%** |
-| Argentina | J | 2134 | 88.2% | 71.6% | 50.0% | 27.9% | **15.2%** |
-| Brazil | C | 2129 | 100.0% | 65.9% | 38.6% | 23.3% | **12.6%** |
-| Spain | H | 2149 | 76.9% | 46.6% | 32.6% | 19.1% | **11.1%** |
-| England | L | 2131 | 80.7% | 53.8% | 29.9% | 17.8% | **9.6%** |
-| Portugal | K | 2099 | 65.8% | 33.6% | 21.2% | 11.2% | **5.8%** |
-| Morocco | C | 2028 | 100.0% | 60.7% | 25.0% | 11.3% | **4.9%** |
-| United States | D | 1934 | 70.3% | 38.4% | 16.0% | 7.0% | **3.0%** |
-| Colombia | K | 2019 | 64.9% | 37.1% | 16.7% | 7.0% | **2.7%** |
-| Mexico | A | 1928 | 57.0% | 24.4% | 10.2% | 4.8% | **2.0%** |
-| Norway | I | 2027 | 57.7% | 21.8% | 10.0% | 4.7% | **1.9%** |
-| Belgium | G | 2006 | 54.4% | 29.0% | 11.3% | 4.6% | **1.9%** |
+| France | I | 2195 | 100.0% | 86.7% | 65.5% | 43.2% | **27.3%** |
+| Argentina | J | 2134 | 88.2% | 71.6% | 50.3% | 27.5% | **14.3%** |
+| Brazil | C | 2129 | 100.0% | 60.3% | 34.0% | 20.3% | **10.6%** |
+| Spain | H | 2149 | 76.8% | 47.3% | 32.9% | 17.6% | **10.1%** |
+| England | L | 2131 | 81.0% | 48.7% | 26.2% | 15.9% | **8.2%** |
+| Portugal | K | 2099 | 65.0% | 32.6% | 20.5% | 9.7% | **4.9%** |
+| Morocco | C | 2028 | 100.0% | 60.7% | 20.6% | 9.3% | **4.1%** |
+| Mexico | A | 1949 | 100.0% | 45.6% | 20.3% | 10.1% | **4.1%** |
+| Norway | I | 2041 | 100.0% | 39.7% | 18.3% | 9.2% | **3.6%** |
+| United States | D | 1934 | 70.5% | 38.6% | 16.3% | 6.3% | **2.8%** |
+| Colombia | K | 2019 | 64.8% | 36.9% | 16.7% | 7.0% | **2.6%** |
+| Belgium | G | 2006 | 54.0% | 28.7% | 11.4% | 4.0% | **1.6%** |
 
 ## Title odds over time
 > How each contender's championship chance has moved as results came in.
@@ -35,19 +35,21 @@
 | Brazil 100% v Japan 0% | 54/26/20 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 48% | 46% |
 | Germany 0% v Paraguay 100% | 54/26/20 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 48% | 46% |
 | Netherlands 0% v Morocco 100% | 40/28/31 | 1.3–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
-| Ivory Coast 42% v Norway 58% | 30/28/42 | 1.1–1.4 | 1–1 (13%), 0–1 (11%), 0–0 (9%) | 50% | 44% |
-| France 78% v Sweden 22% | 64/23/14 | 1.9–0.7 | 1–0 (13%), 2–0 (13%), 1–1 (11%) | 45% | 49% |
-| Mexico (H) 57% v Ecuador 43% | 42/28/29 | 1.4–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
-| England 81% v DR Congo 19% | 66/22/12 | 1.9–0.7 | 2–0 (13%), 1–0 (13%), 1–1 (10%) | 44% | 49% |
+| Ivory Coast 0% v Norway 100% | 27/28/45 | 1.0–1.4 | 1–1 (13%), 0–1 (12%), 0–0 (9%) | 49% | 44% |
+| France 100% v Sweden 0% | 66/22/12 | 1.9–0.7 | 2–0 (13%), 1–0 (13%), 1–1 (10%) | 44% | 49% |
+| Mexico (H) 100% v Ecuador 0% | 47/28/25 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 0–0 (9%) | 49% | 45% |
 | Belgium 54% v Senegal 46% | 39/29/32 | 1.3–1.1 | 1–1 (14%), 1–0 (11%), 0–1 (9%) | 50% | 44% |
 | United States (H) 70% v Bosnia and Herzegovina 30% | 55/26/19 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 47% | 46% |
+| England 81% v DR Congo 19% | 66/22/12 | 1.9–0.7 | 2–0 (13%), 1–0 (13%), 1–1 (10%) | 44% | 49% |
 | Spain 77% v Austria 23% | 62/23/15 | 1.8–0.8 | 1–0 (13%), 2–0 (12%), 1–1 (11%) | 45% | 48% |
-| Portugal 66% v Croatia 34% | 50/27/23 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
-| Switzerland 58% v Algeria 42% | 43/28/29 | 1.4–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
+| Portugal 65% v Croatia 35% | 50/27/23 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
+| Switzerland 59% v Algeria 41% | 43/28/29 | 1.4–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
 | Australia 46% v Egypt 54% | 33/29/39 | 1.2–1.3 | 1–1 (14%), 0–1 (11%), 1–0 (9%) | 50% | 44% |
 | Argentina 88% v Cape Verde 12% | 76/17/7 | 2.3–0.6 | 2–0 (15%), 1–0 (13%), 3–0 (11%) | 40% | 55% |
 | Colombia 65% v Ghana 35% | 49/27/24 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
+| Paraguay 100% v France 100% | 8/18/74 | 0.6–2.2 | 0–2 (15%), 0–1 (13%), 0–3 (11%) | 41% | 53% |
 | Canada (H) 100% v Morocco 100% | 27/28/45 | 1.0–1.4 | 1–1 (13%), 0–1 (12%), 0–0 (9%) | 50% | 44% |
+| Brazil 100% v Norway 100% | 45/28/27 | 1.4–1.0 | 1–1 (13%), 1–0 (12%), 0–0 (9%) | 50% | 44% |
 
 ## How accurate is it? (72 resolved games)
 > Pre-kickoff forecasts scored against reality, versus blindly guessing 33/33/33. On every metric, lower is better except hit rate.
@@ -79,14 +81,14 @@
 
 | Biggest disagreement | Model | Market | Gap |
 |---|--:|--:|--:|
-| France | 20.1% | 28.9% | -8.8 |
-| Brazil | 12.6% | 6.9% | +5.6 |
-| Argentina | 15.2% | 19.0% | -3.8 |
-| Morocco | 4.9% | 3.6% | +1.3 |
-| Canada | 1.3% | 0.3% | +1.0 |
-| Switzerland | 1.6% | 0.8% | +0.8 |
-| Sweden | 0.7% | 0.0% | +0.7 |
-| Belgium | 1.9% | 1.2% | +0.6 |
+| France | 27.3% | 33.0% | -5.8 |
+| Argentina | 14.3% | 18.5% | -4.2 |
+| Brazil | 10.6% | 6.7% | +3.9 |
+| Norway | 3.6% | 1.9% | +1.8 |
+| Mexico | 4.1% | 2.5% | +1.6 |
+| England | 8.2% | 9.4% | -1.2 |
+| Morocco | 4.1% | 3.0% | +1.1 |
+| Canada | 1.0% | 0.3% | +0.7 |
 
 **Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.163** vs Polymarket **0.139** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
 
