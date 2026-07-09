@@ -1,4 +1,4 @@
-# 🏆 World Cup 2026 — Model Report · 2026-07-08
+# 🏆 World Cup 2026 — Model Report · 2026-07-09
 
 *A fully-automated quant forecasting system: it rates every national team, runs 50,000 Monte-Carlo simulations of the tournament every day, prices every match, and grades its own forecasts against reality — no human in the loop. The honest headline finding: it is well-calibrated but not sharper than the betting market. Full write-up in PORTFOLIO.md.*
 
@@ -85,8 +85,8 @@
 
 ## Advancement skill (Round-of-32, Brier — lower better)
 
-- Model: **0.0690** (1104 team-days)
-- Polymarket: **0.0456**
+- Model: **0.0661** (1152 team-days)
+- Polymarket: **0.0432**
 
 ## Model vs the betting market
 > Championship odds: the model against Polymarket (overround stripped). Points on the dashed line mean they agree; the table shows where they disagree most.
@@ -95,14 +95,14 @@
 
 | Biggest disagreement | Model | Market | Gap |
 |---|--:|--:|--:|
-| France | 24.2% | 32.3% | -8.1 |
+| France | 24.2% | 32.1% | -7.9 |
 | Belgium | 6.1% | 2.4% | +3.7 |
-| Argentina | 16.7% | 19.9% | -3.2 |
-| Morocco | 5.4% | 2.9% | +2.5 |
+| Argentina | 16.7% | 20.0% | -3.3 |
+| Morocco | 5.4% | 2.7% | +2.7 |
 | Switzerland | 4.0% | 2.1% | +1.9 |
-| England | 17.6% | 15.7% | +1.8 |
+| England | 17.6% | 15.9% | +1.6 |
 | Norway | 7.3% | 5.9% | +1.4 |
-| Spain | 18.6% | 18.6% | +0.0 |
+| Spain | 18.6% | 18.7% | -0.1 |
 
 **Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.163** vs Polymarket **0.139** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
 
