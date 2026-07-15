@@ -2,18 +2,18 @@
 
 *A fully-automated quant forecasting system: it rates every national team, runs 50,000 Monte-Carlo simulations of the tournament every day, prices every match, and grades its own forecasts against reality — no human in the loop. The honest headline finding: it is well-calibrated but not sharper than the betting market. Full write-up in PORTFOLIO.md.*
 
-<div class="cards"><div class="card"><div class="k">Current favourite</div><div class="v">France</div><div class="s">30.7% chance to win the cup</div></div><div class="card"><div class="k">Forecast accuracy</div><div class="v"><span class="ticker" data-to="0.16676064020833334" data-dec="3" data-suffix="" data-prefix="">0.167</span></div><div class="s">RPS — 25% better than guessing (72 games)</div></div><div class="card"><div class="k">Hit rate</div><div class="v"><span class="ticker" data-to="45.038611111111116" data-dec="0" data-suffix="%" data-prefix="">45%</span></div><div class="s">avg confidence in the result that actually happened</div></div><div class="card"><div class="k">Paper betting</div><div class="v">2W–2L</div><div class="s">net −€90 · tracked honestly, no real money</div></div></div>
+<div class="cards"><div class="card"><div class="k">Current favourite</div><div class="v">Spain</div><div class="s">55.0% chance to win the cup</div></div><div class="card"><div class="k">Forecast accuracy</div><div class="v"><span class="ticker" data-to="0.16676064020833334" data-dec="3" data-suffix="" data-prefix="">0.167</span></div><div class="s">RPS — 25% better than guessing (72 games)</div></div><div class="card"><div class="k">Hit rate</div><div class="v"><span class="ticker" data-to="45.038611111111116" data-dec="0" data-suffix="%" data-prefix="">45%</span></div><div class="s">avg confidence in the result that actually happened</div></div><div class="card"><div class="k">Paper betting</div><div class="v">2W–2L</div><div class="s">net −€90 · tracked honestly, no real money</div></div></div>
 
 ## Championship leaderboard
 > Each team's simulated chance of reaching each knockout round and lifting the trophy, from 50,000 tournament simulations. Darker cells = more likely. Each probability carries a Monte-Carlo 95% margin of ≤ ±0.4 pp from the 50,000 draws.
 
 | Team | Grp | Elo | R16 | QF | SF | Final | **Champ** |
 |---|---|--:|--:|--:|--:|--:|--:|
-| France | I | 2223 | 100.0% | 100.0% | 100.0% | 54.1% | **30.7%** |
-| England | L | 2178 | 100.0% | 100.0% | 100.0% | 52.3% | **24.2%** |
-| Spain | H | 2185 | 100.0% | 100.0% | 100.0% | 45.9% | **23.8%** |
-| Argentina | J | 2157 | 100.0% | 100.0% | 100.0% | 47.7% | **21.3%** |
+| Spain | H | 2214 | 100.0% | 100.0% | 100.0% | 100.0% | **55.0%** |
+| England | L | 2178 | 100.0% | 100.0% | 100.0% | 52.2% | **24.0%** |
+| Argentina | J | 2157 | 100.0% | 100.0% | 100.0% | 47.8% | **21.0%** |
 | Mexico | A | 1926 | 100.0% | 0.0% | 0.0% | 0.0% | **0.0%** |
+| Canada | B | 1820 | 100.0% | 0.0% | 0.0% | 0.0% | **0.0%** |
 | South Africa | A | 1808 | 0.0% | 0.0% | 0.0% | 0.0% | **0.0%** |
 | South Korea | A | 1857 | 0.0% | 0.0% | 0.0% | 0.0% | **0.0%** |
 | Czech Republic | A | 1852 | 0.0% | 0.0% | 0.0% | 0.0% | **0.0%** |
@@ -36,33 +36,33 @@
 | Germany 0% v Paraguay 100% | 56/25/19 | 1.7–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 47% | 46% |
 | Netherlands 0% v Morocco 100% | 40/28/32 | 1.3–1.1 | 1–1 (14%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
 | Ivory Coast 0% v Norway 100% | 25/28/47 | 1.0–1.5 | 1–1 (13%), 0–1 (12%), 0–0 (9%) | 49% | 45% |
-| France 100% v Sweden 0% | 70/20/10 | 2.1–0.7 | 2–0 (14%), 1–0 (13%), 3–0 (10%) | 42% | 51% |
+| France 100% v Sweden 0% | 66/22/12 | 1.9–0.7 | 2–0 (13%), 1–0 (13%), 1–1 (10%) | 44% | 49% |
 | Mexico (H) 100% v Ecuador 0% | 44/28/28 | 1.4–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
 | England 100% v DR Congo 0% | 74/18/8 | 2.2–0.6 | 2–0 (15%), 1–0 (13%), 3–0 (11%) | 41% | 53% |
 | Belgium 100% v Senegal 0% | 46/28/26 | 1.4–1.0 | 1–1 (13%), 1–0 (12%), 0–0 (9%) | 49% | 45% |
 | United States (H) 100% v Bosnia and Herzegovina 0% | 53/26/21 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (10%) | 48% | 45% |
-| Spain 100% v Austria 0% | 68/21/11 | 2.0–0.7 | 2–0 (14%), 1–0 (13%), 1–1 (10%) | 43% | 50% |
-| Portugal 100% v Croatia 0% | 52/26/21 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (10%) | 48% | 45% |
+| Spain 100% v Austria 0% | 72/19/9 | 2.2–0.6 | 2–0 (14%), 1–0 (13%), 3–0 (10%) | 42% | 53% |
+| Portugal 100% v Croatia 0% | 52/26/21 | 1.6–0.9 | 1–1 (13%), 1–0 (13%), 2–0 (10%) | 48% | 45% |
 | Switzerland 100% v Algeria 0% | 47/28/25 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 0–0 (9%) | 49% | 45% |
 | Australia 0% v Egypt 100% | 33/29/39 | 1.2–1.3 | 1–1 (14%), 0–1 (11%), 1–0 (9%) | 50% | 44% |
 | Argentina 100% v Cape Verde 0% | 79/15/6 | 2.4–0.5 | 2–0 (15%), 3–0 (12%), 1–0 (12%) | 39% | 57% |
 | Colombia 100% v Ghana 0% | 50/27/23 | 1.5–1.0 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 49% | 45% |
-| Paraguay 100% v France 100% | 6/16/78 | 0.6–2.4 | 0–2 (15%), 0–1 (12%), 0–3 (12%) | 39% | 56% |
+| Paraguay 100% v France 100% | 8/18/74 | 0.6–2.2 | 0–2 (15%), 0–1 (13%), 0–3 (11%) | 41% | 54% |
 | Canada (H) 100% v Morocco 100% | 25/27/48 | 1.0–1.5 | 1–1 (13%), 0–1 (12%), 0–2 (9%) | 49% | 45% |
 | Brazil 100% v Norway 100% | 40/28/31 | 1.3–1.1 | 1–1 (13%), 1–0 (11%), 0–0 (9%) | 50% | 44% |
 | Mexico (H) 100% v England 100% | 21/26/53 | 0.9–1.6 | 0–1 (13%), 1–1 (12%), 0–2 (10%) | 48% | 46% |
-| Portugal 100% v Spain 100% | 28/28/44 | 1.1–1.4 | 1–1 (13%), 0–1 (11%), 0–0 (9%) | 50% | 44% |
+| Portugal 100% v Spain 100% | 25/28/47 | 1.0–1.5 | 1–1 (13%), 0–1 (12%), 0–2 (9%) | 49% | 45% |
 | United States (H) 100% v Belgium 100% | 31/28/40 | 1.1–1.3 | 1–1 (13%), 0–1 (11%), 0–0 (9%) | 50% | 44% |
 | Argentina 100% v Egypt 100% | 68/21/11 | 2.0–0.7 | 2–0 (14%), 1–0 (13%), 1–1 (10%) | 43% | 50% |
 | Switzerland 100% v Colombia 100% | 34/29/37 | 1.2–1.3 | 1–1 (14%), 0–1 (10%), 1–0 (10%) | 50% | 44% |
-| France 100% v Morocco 100% | 59/25/17 | 1.7–0.8 | 1–0 (13%), 2–0 (12%), 1–1 (12%) | 46% | 47% |
-| Spain 100% v Belgium 100% | 50/27/23 | 1.5–0.9 | 1–1 (13%), 1–0 (12%), 2–0 (10%) | 48% | 45% |
+| France 100% v Morocco 100% | 54/26/20 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 48% | 46% |
+| Spain 100% v Belgium 100% | 54/26/20 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 48% | 46% |
 | Norway 100% v England 100% | 24/27/49 | 1.0–1.5 | 1–1 (13%), 0–1 (12%), 0–2 (10%) | 49% | 45% |
 | Argentina 100% v Switzerland 100% | 54/26/20 | 1.6–0.9 | 1–0 (13%), 1–1 (12%), 2–0 (11%) | 48% | 46% |
-| France 100% v Spain 100% | 39/28/32 | 1.3–1.1 | 1–1 (14%), 1–0 (11%), 0–1 (9%) | 50% | 44% |
+| France 100% v Spain 100% | 34/29/38 | 1.2–1.3 | 1–1 (14%), 0–1 (10%), 1–0 (10%) | 50% | 44% |
 | England 100% v Argentina 100% | 38/29/34 | 1.3–1.2 | 1–1 (14%), 1–0 (10%), 0–1 (10%) | 50% | 44% |
-| nan nan% v nan nan% | 36/29/36 | 1.2–1.2 | 1–1 (14%), 1–0 (10%), 0–1 (10%) | 50% | 44% |
-| nan nan% v nan nan% | 36/29/36 | 1.2–1.2 | 1–1 (14%), 1–0 (10%), 0–1 (10%) | 50% | 44% |
+| France 100% v nan nan% | 94/5/1 | 3.7–0.3 | 3–0 (15%), 4–0 (14%), 2–0 (12%) | 27% | 77% |
+| Spain 100% v nan nan% | 94/5/1 | 3.8–0.3 | 3–0 (15%), 4–0 (14%), 2–0 (12%) | 27% | 77% |
 
 ## How accurate is it? (72 resolved games)
 > Pre-kickoff forecasts scored against reality, versus blindly guessing 33/33/33. On every metric, lower is better except hit rate.
@@ -99,9 +99,9 @@
 
 | Biggest disagreement | Model | Market | Gap |
 |---|--:|--:|--:|
-| Spain | 23.8% | 57.7% | -33.8 |
-| England | 24.2% | 22.6% | +1.6 |
-| Argentina | 21.3% | 19.8% | +1.5 |
+| England | 24.0% | 0.1% | +24.0 |
+| Argentina | 21.0% | 42.0% | -21.0 |
+| Spain | 55.0% | 58.0% | -3.0 |
 
 **Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.163** vs Polymarket **0.139** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
 
