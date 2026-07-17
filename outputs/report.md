@@ -99,8 +99,8 @@
 
 | Biggest disagreement | Model | Market | Gap |
 |---|--:|--:|--:|
-| Spain | 54.4% | 58.7% | -4.3 |
-| Argentina | 45.6% | 41.3% | +4.3 |
+| Spain | 54.4% | 59.3% | -5.0 |
+| Argentina | 45.6% | 40.7% | +5.0 |
 
 **Who called advancement better?** Scored on who actually reached the Round of 32 (n=48): model Brier **0.163** vs Polymarket **0.139** — the market edged the model, consistent with the project's honest finding that the model is well-calibrated but not sharper than the market.
 
